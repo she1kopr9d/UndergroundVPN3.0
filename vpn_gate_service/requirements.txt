@@ -1,0 +1,15 @@
+alembic
+asyncpg
+docker
+fastapi
+faststream
+faststream[rabbit]
+httpx
+pydantic
+pydantic[email]
+pydantic-settings
+psycopg
+psycopg-binary
+pytest
+sqlalchemy
+uvicorn
