@@ -7,7 +7,7 @@ from alembic import context
 
 import config as settings
 
-from database.models import Base # noqa
+from database.models import Base  # noqa
 
 
 config = context.config

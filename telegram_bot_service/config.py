@@ -11,9 +11,11 @@ class Settings(pydantic_settings.BaseSettings):
 
     @property
     def rabbitmq_url(self):
-        return (f"amqp://{self.RABBITMQ_DEFAULT_USER}:"
-                f"{self.RABBITMQ_DEFAULT_PASS}@"
-                f"{self.BROKER_HOST}:{self.BROKER_PORT}")
+        return (
+            f"amqp://{self.RABBITMQ_DEFAULT_USER}:"
+            f"{self.RABBITMQ_DEFAULT_PASS}@"
+            f"{self.BROKER_HOST}:{self.BROKER_PORT}"
+        )
 
 
 settings = Settings()
