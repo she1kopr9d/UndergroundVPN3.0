@@ -1,20 +1,31 @@
+import sys
 import asyncio
+import logging
+
 import aiogram
 
-import config
-import broker
-
+import deps
 import handlers.user
+import rabbit
 
+import subscribers.user # noqa
+import subscribers.admin # noqa
 
-bot = aiogram.Bot(token=config.settings.TELEGRAM_TOKEN)
 dp = aiogram.Dispatcher()
+logging.basicConfig(level=logging.INFO)
 
 
 async def main():
-    async with broker.broker_obj:
+    mode = sys.argv[1]
+    print("Starting bot")
+    if mode == "bot":
         dp.include_router(handlers.user.router)
-        await dp.start_polling(bot)
+        async with rabbit.broker:
+            await rabbit.broker.start()
+            await dp.start_polling(deps.bot)
+    elif mode == "broker":
+        await rabbit.broker.start()
+        await asyncio.Event().wait()
 
 
 if __name__ == "__main__":

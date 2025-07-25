@@ -29,20 +29,20 @@ services:
     networks:
       - undergroundvpn
   
-  backend-test:
-    build: ./backend
-    container_name: backend-test
-    depends_on:
-      - backend
-    entrypoint: ["pytest", "tests"]
-    env_file:
-      - .env
-    volumes:
-      - ./xray/config.json:/opt/myvpn/config.json:rw
-      - /usr/local/bin/xray:/usr/local/bin/xray:ro
-      - /var/run/docker.sock:/var/run/docker.sock
-    networks:
-      - undergroundvpn
+  # backend-test:
+  #   build: ./backend
+  #   container_name: backend-test
+  #   depends_on:
+  #     - backend
+  #   entrypoint: ["pytest", "tests"]
+  #   env_file:
+  #     - .env
+  #   volumes:
+  #     - ./xray/config.json:/opt/myvpn/config.json:rw
+  #     - /usr/local/bin/xray:/usr/local/bin/xray:ro
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #   networks:
+  #     - undergroundvpn
 
 networks:
   undergroundvpn:

@@ -32,6 +32,10 @@ services:
             retries: 5
         volumes:
             - postgres_data:/var/lib/postgresql/data
+        environment:
+            POSTGRES_LOGGING_COLLECTOR: "off"
+        logging:
+            driver: "none"
 
     rabbitmq:
         image: rabbitmq:3-management
@@ -48,9 +52,14 @@ services:
             interval: 10s
             timeout: 5s
             retries: 5
+        environment:
+            RABBITMQ_LOGS: "-"
+            RABBITMQ_LOG_LEVEL: "warning"
+        logging:
+            driver: "none"
     telegram-bot:
         build: ./telegram_bot_service
-        command: python main.py
+        command: python main.py bot
         env_file:
             - .env
         depends_on:
@@ -58,6 +67,17 @@ services:
                 condition: service_healthy
         networks:
             - undergroundvpn
+    
+    # telegram-bot-broker:
+    #     build: ./telegram_bot_service
+    #     command: python main.py broker
+    #     env_file:
+    #         - .env
+    #     depends_on:
+    #         rabbitmq:
+    #             condition: service_healthy
+    #     networks:
+    #         - undergroundvpn
 
 volumes:
     postgres_data:

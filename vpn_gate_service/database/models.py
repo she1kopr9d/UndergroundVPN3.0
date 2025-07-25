@@ -31,7 +31,11 @@ class TelegramUser(Base):
     __tablename__ = "telegram_users"
 
     id: sqlalchemy.orm.Mapped[intpk]
-    telegram_id = sqlalchemy.Column(sqlalchemy.BigInteger)
+    telegram_id = sqlalchemy.Column(
+        sqlalchemy.BigInteger,
+        unique=True,
+        nullable=False,
+    )
     username = sqlalchemy.Column(sqlalchemy.String)
     created_at: sqlalchemy.orm.Mapped[created_at]
     updated_at: sqlalchemy.orm.Mapped[updated_at]
