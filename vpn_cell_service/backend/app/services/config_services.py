@@ -35,8 +35,7 @@ def save_config(config: dict[str, typing.Any]) -> None:
 
 def find_inbound(config: dict[str, typing.Any]) -> dict[str, typing.Any]:
     for inbound in config.get("inbounds", []):
-        if inbound.get("tag") == app.config.settings.inbound_tag:
-            return inbound
+        return inbound
     raise ValueError(
         f"Inbound с тегом '{app.config.settings.inbound_tag}' не найден"
     )
@@ -46,27 +45,40 @@ def add_user_to_config(
     config: dict[str, typing.Any], email: str, uuid: str
 ) -> None:
     inbound = find_inbound(config)
-    clients = inbound.setdefault("settings", {}).setdefault("clients", [])
+    settings = inbound.setdefault("settings", {})
+    clients = settings.setdefault("clients", [])
+
+    # Проверка на дубликаты
     for client in clients:
         if client.get("email") == email or client.get("id") == uuid:
             raise ValueError("Пользователь уже существует")
-    clients.append(
-        {"id": uuid, "email": email, "level": 0, "flow": "xtls-rprx-vision"}
-    )
+
+    # Добавление клиента
+    clients.append({
+        "id": uuid,
+        "email": email,
+        "level": 0,
+        "flow": "xtls-rprx-vision"
+    })
 
 
-def remove_user_from_config(config: dict, email: str, uuid: str) -> None:
-    clients = (
-        config.get("inbounds", [])[0].get("settings", {}).get("clients", [])
-    )
+def remove_user_from_config(
+    config: dict[str, typing.Any], email: str, uuid: str
+) -> None:
+    inbound = find_inbound(config)
+    settings = inbound.get("settings", {})
+    clients = settings.get("clients", [])
+
     updated_clients = [
-        client
-        for client in clients
+        client for client in clients
         if not (client.get("email") == email and client.get("id") == uuid)
     ]
+
     if len(updated_clients) == len(clients):
         raise ValueError("Пользователь не найден в конфиге")
-    config["inbounds"][0]["settings"]["clients"] = updated_clients
+
+    # Применяем обновлённый список
+    settings["clients"] = updated_clients
 
 
 def generate_url(email: str, uuid: str) -> str:
