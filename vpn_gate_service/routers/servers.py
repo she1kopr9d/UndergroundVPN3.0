@@ -1,21 +1,15 @@
 import fastapi
-import typing
-import time
 import asyncio
+import typing
 import faststream.rabbit.fastapi
 
 import config
 import schemas.servers
 import database.io.server
+import logic.server_session
 
 
 router = faststream.rabbit.fastapi.RabbitRouter(config.rabbitmq.rabbitmq_url)
-
-
-active_servers: dict[str, tuple[schemas.servers.ServerPublicInfo, float]] = {}
-
-CLEANUP_INTERVAL = 30
-SERVER_TIMEOUT = 60
 
 
 @router.post("/server/auth")
@@ -24,20 +18,22 @@ async def server_auth(request: schemas.servers.ServerAuth):
         raise fastapi.HTTPException(
             status_code=401, detail="Invalid secret key"
         )
+
     public_info = schemas.servers.ServerPublicInfo(
         name=request.name,
         ip=request.ip,
         port=request.port,
         api_version=request.api_version,
     )
-    active_servers[request.name] = (public_info, time.time())
+    logic.server_session.register_server(public_info)
+
     await router.broker.publish(
         {
             "user_id": 798030433,
             "server_name": request.name,
             "server_ip": request.ip,
             "server_port": request.port,
-            "status": "start"
+            "status": "start",
         },
         queue="notification_auth_server",
     )
@@ -46,17 +42,19 @@ async def server_auth(request: schemas.servers.ServerAuth):
 
 @router.post("/server/handshake")
 async def server_handshake(request: schemas.servers.ServerAuth):
-    if request.name not in active_servers:
+    if not logic.server_session.is_authorized(request.name):
         raise fastapi.HTTPException(
             status_code=403, detail="Сервер не авторизован"
         )
+
     public_info = schemas.servers.ServerPublicInfo(
         name=request.name,
         ip=request.ip,
         port=request.port,
         api_version=request.api_version,
     )
-    active_servers[request.name] = (public_info, time.time())
+    logic.server_session.update_handshake(public_info)
+
     return {"status": "ok", "message": "Handshake успешен"}
 
 
@@ -65,28 +63,31 @@ async def server_handshake(request: schemas.servers.ServerAuth):
     response_model=typing.List[schemas.servers.ServerPublicInfo],
 )
 async def get_active_servers():
-    return [info for info, _ in active_servers.values()]
+    return logic.server_session.get_active_servers()
 
 
-async def cleanup_inactive_servers():
-    while True:
-        current_time = time.time()
-        for name, (info, last_handshake) in list(active_servers.items()):
-            if current_time - last_handshake > SERVER_TIMEOUT:
-                del active_servers[name]
-                await router.broker.publish(
-                    {
-                        "user_id": 798030433,
-                        "server_name": info.name,
-                        "server_ip": info.ip,
-                        "server_port": info.port,
-                        "status": "stop"
-                    },
-                    queue="notification_auth_server",
-                )
-        await asyncio.sleep(CLEANUP_INTERVAL)
+@router.get("/server/active")
+async def get_all_active_servers():
+    return {
+        "status": "ok",
+        "data": logic.server_session.get_active_servers_dict(),
+    }
 
 
 @router.on_event("startup")
 async def startup_event():
-    asyncio.create_task(cleanup_inactive_servers())
+    async def notify_stop(info: schemas.servers.ServerPublicInfo):
+        await router.broker.publish(
+            {
+                "user_id": 798030433,
+                "server_name": info.name,
+                "server_ip": info.ip,
+                "server_port": info.port,
+                "status": "stop",
+            },
+            queue="notification_auth_server",
+        )
+
+    asyncio.create_task(
+        logic.server_session.cleanup_inactive_servers(notify_stop)
+    )

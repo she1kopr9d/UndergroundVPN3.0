@@ -5,3 +5,5 @@ pydantic-settings
 
 faststream
 faststream[rabbit]
+
+httpx

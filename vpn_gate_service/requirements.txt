@@ -13,3 +13,4 @@ psycopg-binary
 pytest
 sqlalchemy
 uvicorn
+httpx

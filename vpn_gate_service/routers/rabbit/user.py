@@ -1,8 +1,8 @@
 import faststream.rabbit.fastapi
 
-import config
 import schemas.telegram
 import database.io.telegram_user
+import config
 
 
 router = faststream.rabbit.fastapi.RabbitRouter(config.rabbitmq.rabbitmq_url)
@@ -11,7 +11,7 @@ router = faststream.rabbit.fastapi.RabbitRouter(config.rabbitmq.rabbitmq_url)
 @router.subscriber("start_command")
 async def handle_start(data: schemas.telegram.StartData):
     status = ""
-    if (await database.io.telegram_user.telegram_user_exist(data)):
+    if await database.io.telegram_user.telegram_user_exist(data):
         status = "user already exists"
     else:
         await database.io.telegram_user.create_telegram_user(data)

@@ -7,7 +7,20 @@
       "port": 44344,
       "protocol": "vless",
       "settings": {
-        "clients": [],
+        "clients": [
+          {
+            "id": "f71bfd59-0b93-43ba-8ab0-17fdc015f1de",
+            "email": "f71bfd59-0b93-43ba-8ab0-17fdc015f1de@user.id",
+            "level": 0,
+            "flow": "xtls-rprx-vision"
+          },
+          {
+            "id": "0ac8016b-c850-4e86-bd76-8d5cb6e86769",
+            "email": "0ac8016b-c850-4e86-bd76-8d5cb6e86769@user.id",
+            "level": 0,
+            "flow": "xtls-rprx-vision"
+          }
+        ],
         "decryption": "none"
       },
       "streamSettings": {

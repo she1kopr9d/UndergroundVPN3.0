@@ -17,6 +17,14 @@ class Settings(pydantic_settings.BaseSettings):
     GATE_API_VERSION: str = pydantic.Field(default="")
     GATE_IP_ADDRESS: str = pydantic.Field(default="")
 
+    DOMAIN: str
+    VPN_PORT: int
+    HOST: str
+    FINGERPRINT: str
+    ENCRYPTION: str
+    SECURITY: str
+    NET_TYPE: str
+
     class Config:
         env_file = ".env"
 

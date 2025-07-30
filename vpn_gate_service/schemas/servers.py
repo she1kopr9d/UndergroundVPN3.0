@@ -16,3 +16,8 @@ class ServerPublicInfo(pydantic.BaseModel):
     ip: str = pydantic.Field(..., description="IP сервера")
     port: int = pydantic.Field(..., ge=1, le=65535, description="Порт сервера")
     api_version: str
+
+
+class ServerCreate(pydantic.BaseModel):
+    name: str
+    secret_key: str

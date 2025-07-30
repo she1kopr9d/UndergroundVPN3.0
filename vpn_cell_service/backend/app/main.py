@@ -29,7 +29,11 @@ def add_user(user: UserInput):
             config, str(user.email), str(user.uuid)
         )
         config_services.save_config(config)
-        return {"message": "Пользователь добавлен и Xray перезапущен"}
+        return {
+            "status": "ok",
+            "message": "Пользователь добавлен и Xray перезапущен",
+            "config": config_services.generate_url(user.email, user.uuid),
+        }
     except ValueError as e:
         raise fastapi.HTTPException(status_code=400, detail=str(e))
     except RuntimeError as e:

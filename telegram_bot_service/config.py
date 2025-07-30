@@ -9,6 +9,8 @@ class Settings(pydantic_settings.BaseSettings):
     RABBITMQ_DEFAULT_USER: str
     RABBITMQ_DEFAULT_PASS: str
 
+    GATE_URL: str
+
     @property
     def rabbitmq_url(self):
         return (

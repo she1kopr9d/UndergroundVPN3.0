@@ -1,7 +1,6 @@
 import aiogram
 import aiogram.filters
 
-import main
 import rabbit
 
 
