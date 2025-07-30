@@ -27,8 +27,7 @@ def get_server_id_by_name(server_name: str) -> int | None:
 def create_server(server: schemas.servers.ServerCreate):
     with database.database.session_factory() as session:
         new_server = database.models.Server(
-            name=server.name,
-            code=server.secret_key
+            name=server.name, code=server.secret_key
         )
         session.add(new_server)
         session.commit()

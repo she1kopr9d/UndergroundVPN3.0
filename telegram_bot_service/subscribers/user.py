@@ -18,6 +18,10 @@ async def handle_start(
         )
     else:
         msg = "Произошла непредвиденная ошибка"
+    if data.is_referral:
+        msg += content.user.REFERRAL_TEXT(
+            data.referrer_username,
+        )
     await bot.send_message(
         chat_id=data.user_id, text=msg, parse_mode="Markdown"
     )
@@ -31,5 +35,17 @@ async def handle_create_config(
     await bot.send_message(
         chat_id=data.user_id,
         text=content.user.VIEW_CONFIG(data.config_url),
+        parse_mode="Markdown",
+    )
+
+
+@rabbit.broker.subscriber("new_referral")
+async def handle_new_referral(
+    data: schemas.user.NewReferralData,
+):
+    bot = await deps.get_bot()
+    await bot.send_message(
+        chat_id=data.referrer_user_id,
+        text=content.user.NEW_REFERRAL(data.referral_username),
         parse_mode="Markdown",
     )

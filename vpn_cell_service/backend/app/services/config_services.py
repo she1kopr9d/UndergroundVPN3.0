@@ -54,12 +54,9 @@ def add_user_to_config(
             raise ValueError("Пользователь уже существует")
 
     # Добавление клиента
-    clients.append({
-        "id": uuid,
-        "email": email,
-        "level": 0,
-        "flow": "xtls-rprx-vision"
-    })
+    clients.append(
+        {"id": uuid, "email": email, "level": 0, "flow": "xtls-rprx-vision"}
+    )
 
 
 def remove_user_from_config(
@@ -70,7 +67,8 @@ def remove_user_from_config(
     clients = settings.get("clients", [])
 
     updated_clients = [
-        client for client in clients
+        client
+        for client in clients
         if not (client.get("email") == email and client.get("id") == uuid)
     ]
 

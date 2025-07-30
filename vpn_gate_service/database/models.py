@@ -4,7 +4,7 @@ import datetime
 import sqlalchemy
 import sqlalchemy.orm
 
-import database.core
+import database.core # noqa
 
 
 intpk = typing.Annotated[int, sqlalchemy.orm.mapped_column(primary_key=True)]
@@ -45,9 +45,29 @@ class TelegramUser(Base):
     created_at: sqlalchemy.orm.Mapped[created_at]
     updated_at: sqlalchemy.orm.Mapped[updated_at]
 
+    referrer_id = sqlalchemy.Column(
+        sqlalchemy.Integer,
+        sqlalchemy.ForeignKey("telegram_users.id"),
+        nullable=True,
+    )
+
     configs: sqlalchemy.orm.Mapped[list["Config"]] = (
         sqlalchemy.orm.relationship(
             back_populates="user", cascade="all, delete-orphan"
+        )
+    )
+
+    referrer: sqlalchemy.orm.Mapped["TelegramUser"] = (
+        sqlalchemy.orm.relationship(
+            back_populates="referrals",
+            remote_side="TelegramUser.id",
+        )
+    )
+
+    referrals: sqlalchemy.orm.Mapped[list["TelegramUser"]] = (
+        sqlalchemy.orm.relationship(
+            back_populates="referrer",
+            cascade="all, delete-orphan",
         )
     )
 

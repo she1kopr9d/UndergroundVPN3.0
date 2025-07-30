@@ -4,6 +4,7 @@ import pydantic
 class StartData(pydantic.BaseModel):
     user_id: int
     username: str
+    referrer_user_id: int | None
 
 
 class UserData(pydantic.BaseModel):

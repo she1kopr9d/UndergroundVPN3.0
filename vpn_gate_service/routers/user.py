@@ -1,4 +1,3 @@
-import fastapi
 import faststream.rabbit.fastapi
 
 import config

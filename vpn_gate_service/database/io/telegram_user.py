@@ -7,11 +7,15 @@ import schemas.dev
 import schemas.telegram
 
 
-async def create_telegram_user(data: schemas.telegram.StartData):
+async def create_telegram_user(
+    data: schemas.telegram.StartData,
+    referrer_id: int | None = None,
+):
     async with database.database.async_session_factory() as session:
         new_user = database.models.TelegramUser(
             telegram_id=data.user_id,
             username=data.username,
+            referrer_id=referrer_id,
         )
         session.add(new_user)
         await session.commit()
@@ -50,7 +54,9 @@ async def user_is_admin(data: schemas.telegram.UserData) -> bool:
         return bool(is_admin)
 
 
-async def get_telegram_user_data(user_id: int) -> schemas.telegram.UserAllData | None:
+async def get_telegram_user_data(
+    user_id: int,
+) -> schemas.telegram.UserAllData | None:
     async with database.database.async_session_factory() as session:
         stmt = sqlalchemy.select(database.models.TelegramUser).where(
             database.models.TelegramUser.telegram_id == user_id

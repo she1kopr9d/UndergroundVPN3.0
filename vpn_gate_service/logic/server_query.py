@@ -40,7 +40,7 @@ async def create_config(
         uuid=str(user_uuid),
         config=data["config"],
         server_id=server_id,
-        user_data=user_data
+        user_data=user_data,
     )
 
     return data["config"]

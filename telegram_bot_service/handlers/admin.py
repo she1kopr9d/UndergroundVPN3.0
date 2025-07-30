@@ -32,7 +32,10 @@ async def get_servers_handler(message: aiogram.types.Message):
             )
         except httpx.HTTPStatusError as exc:
             await message.answer(
-                f"Ошибка HTTP: {exc.response.status_code} - {exc.response.text}"
+                (
+                    f"Ошибка HTTP: {exc.response.status_code}"
+                    f" - {exc.response.text}"
+                )
             )
         except httpx.RequestError as exc:
             await message.answer(f"Ошибка запроса: {exc}")
@@ -44,10 +47,7 @@ async def get_servers_handler(message: aiogram.types.Message):
 async def create_config_handler(message: aiogram.types.Message):
     if len(message.text.split()) < 2:
         await message.answer(
-            (
-                "Эта команда требует один аргумент"
-                "/сc <server_name:str>"
-            )
+            ("Эта команда требует один аргумент" "/сc <server_name:str>")
         )
         return
     server_name = message.text.split()[1]

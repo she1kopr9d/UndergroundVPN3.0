@@ -30,3 +30,22 @@ def VIEW_CONFIG(
 
 `{config}`
 """
+
+
+def NEW_REFERRAL(
+    referrer_username: str,
+) -> str:
+    return f"""
+Поздравляем, у вас новый реферал
+
+@{referrer_username}
+"""
+
+
+def REFERRAL_TEXT(
+    referrer_username: str,
+) -> str:
+    return f"""
+
+Вас позвал в наш коллектив @{referrer_username}
+"""
