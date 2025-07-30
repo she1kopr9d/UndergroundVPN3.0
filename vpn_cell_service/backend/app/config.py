@@ -24,6 +24,8 @@ class Settings(pydantic_settings.BaseSettings):
     ENCRYPTION: str
     SECURITY: str
     NET_TYPE: str
+    SHORTID: str
+    PUBLICKEY: str
 
     class Config:
         env_file = ".env"

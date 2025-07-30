@@ -71,12 +71,15 @@ def remove_user_from_config(config: dict, email: str, uuid: str) -> None:
 
 def generate_url(email: str, uuid: str) -> str:
     vless_link = (
-        f"vless://{uuid}@{app.config.settings.DOMAIN}:"
-        f"{app.config.settings.VPN_PORT}"
+        "vless://"
+        f"{uuid}@{app.config.settings.DOMAIN}:{app.config.settings.VPN_PORT}"
         f"?encryption={app.config.settings.ENCRYPTION}"
+        "&flow=xtls-rprx-vision"
         f"&security={app.config.settings.SECURITY}"
-        f"&type={app.config.settings.NET_TYPE}&host="
-        f"{app.config.settings.HOST}&fp={app.config.settings.FINGERPRINT}"
-        f"#{email}"
+        f"&sni={app.config.settings.HOST}"
+        f"&fp={app.config.settings.FINGERPRINT}"
+        f"&pbk={app.config.settings.PUBLICKEY}"
+        f"&sid={app.config.settings.SHORTID}"
+        f"&type={app.config.settings.NET_TYPE}#{email}"
     )
     return vless_link
