@@ -2,6 +2,7 @@ import aiogram
 import aiogram.filters
 
 import rabbit
+import content.user
 
 
 router = aiogram.Router()
@@ -46,9 +47,12 @@ async def handle_start_command(
     )
 
 
-@router.message(aiogram.filters.Command("test"))
-async def handle_test_command(message: aiogram.types.Message):
-    await message.answer("test command")
+@router.message(aiogram.filters.Command("help"))
+async def handle_help_command(message: aiogram.types.Message):
+    await message.answer(
+        text=content.user.HELP_COMMAND(),
+        parse_mode="HTML",
+    )
 
 
 @router.message(aiogram.filters.Command("profile"))

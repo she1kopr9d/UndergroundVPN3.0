@@ -1,3 +1,4 @@
+import enum
 import typing
 import datetime
 
@@ -69,6 +70,12 @@ class TelegramUser(Base):
             back_populates="referrer",
             cascade="all, delete-orphan",
         )
+    )
+
+    finance_account = sqlalchemy.orm.relationship(
+        "FinanceAccount",
+        back_populates="user",
+        uselist=False,
     )
 
 
@@ -144,4 +151,121 @@ class ServerConfig(Base):
         "Server",
         back_populates="config",
         uselist=False,
+    )
+
+
+class FinanceAccount(Base):
+    __tablename__ = "finance_accounts"
+
+    id: sqlalchemy.orm.Mapped[intpk]
+    balance: sqlalchemy.orm.Mapped[float] = sqlalchemy.Column(
+        sqlalchemy.Float,
+        default=0.0,
+        nullable=False
+    )
+    referral_percent: sqlalchemy.orm.Mapped[int] = sqlalchemy.Column(
+        sqlalchemy.Integer,
+        default=15,
+        nullable=False,
+    )
+    created_at: sqlalchemy.orm.Mapped[created_at]
+    updated_at: sqlalchemy.orm.Mapped[updated_at]
+
+    # user
+    user_id: sqlalchemy.orm.Mapped[int] = sqlalchemy.orm.mapped_column(
+        sqlalchemy.ForeignKey("telegram_users.id"),
+    )
+
+    user = sqlalchemy.orm.relationship(
+        "TelegramUser",
+        back_populates="finance_account",
+        uselist=False,
+    )
+
+    payments: sqlalchemy.orm.Mapped[list["Payment"]] = (
+        sqlalchemy.orm.relationship(
+            back_populates="finance_account", cascade="all, delete-orphan"
+        )
+    )
+
+
+class PaymentStatus(enum.Enum):
+    pending = "pending"
+    completed = "completed"
+    failed = "failed"
+
+
+class PaymentMode(enum.Enum):
+    test = "test"
+    production = "production"
+
+
+class PaymentMethod(enum.Enum):
+    crypto = "crypto"
+    telegram_star = "telegram_star"
+    handle = "handle"
+    system = "system"
+
+
+class TransactionType(enum.Enum):
+    deposit = "deposit"
+    withdrawal = "withdrawal"
+
+
+class Payment(Base):
+    __tablename__ = "payments"
+
+    id: sqlalchemy.orm.Mapped[intpk]
+    amount: sqlalchemy.orm.Mapped[float]
+    transaction_type: sqlalchemy.orm.Mapped[TransactionType] = (
+        sqlalchemy.orm.mapped_column(
+            sqlalchemy.Enum(TransactionType),
+            nullable=False,
+        )
+    )
+    status: sqlalchemy.orm.Mapped[PaymentStatus] = (
+        sqlalchemy.orm.mapped_column(
+            sqlalchemy.Enum(PaymentStatus),
+            default=PaymentStatus.pending,
+            nullable=False,
+        )
+    )
+    mode: sqlalchemy.orm.Mapped[PaymentMode] = (
+        sqlalchemy.orm.mapped_column(
+            sqlalchemy.Enum(PaymentMode),
+            default=PaymentMode.production,
+            nullable=False,
+        )
+    )
+    payment_method: sqlalchemy.orm.Mapped[PaymentMethod] = (
+        sqlalchemy.orm.mapped_column(
+            sqlalchemy.Enum(PaymentMethod),
+            nullable=False,
+        )
+    )
+
+    external_id: sqlalchemy.orm.Mapped[str] = sqlalchemy.orm.mapped_column(
+        sqlalchemy.String,
+        nullable=True,
+        unique=True
+    )
+
+    note: sqlalchemy.orm.Mapped[str] = sqlalchemy.orm.mapped_column(
+        sqlalchemy.Text,
+        nullable=True,
+    )
+
+    created_at: sqlalchemy.orm.Mapped[created_at]
+    updated_at: sqlalchemy.orm.Mapped[updated_at]
+
+    finance_account_id: sqlalchemy.orm.Mapped[int] = (
+        sqlalchemy.orm.mapped_column(
+            sqlalchemy.ForeignKey("finance_accounts.id")
+        )
+    )
+
+    finance_account: sqlalchemy.orm.Mapped["FinanceAccount"] = (
+        sqlalchemy.orm.relationship(
+            back_populates="payments",
+        )
     )

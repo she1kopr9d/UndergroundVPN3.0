@@ -45,9 +45,7 @@ async def handle_create_server(data: schemas.telegram.CreateServerData):
         ),
     )
 
-    server_config = await logic.config_query.create_server_config(
-        server,
-    )
+    await logic.config_query.create_server_config(server)
 
     await router.broker.publish(
         {
