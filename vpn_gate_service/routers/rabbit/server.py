@@ -7,6 +7,7 @@ import schemas.servers
 import schemas.telegram
 import logic.server_session
 import logic.server_query
+import logic.config_query
 import database.io.server
 
 
@@ -38,11 +39,15 @@ async def handle_create_config(data: schemas.config.CreateConfig):
 
 @router.subscriber("create_server")
 async def handle_create_server(data: schemas.telegram.CreateServerData):
-    database.io.server.create_server(
+    server = database.io.server.create_server(
         schemas.servers.ServerCreate(
             name=data.name,
             secret_key=data.secret_key,
         ),
+    )
+
+    server_config = await logic.config_query.create_server_config(
+        server,
     )
 
     await router.broker.publish(

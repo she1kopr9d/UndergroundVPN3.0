@@ -10,12 +10,18 @@ class ServerAuth(pydantic.BaseModel):
         ..., description="Секретный ключ для авторизации"
     )
 
+    vpn_ip: str
+    vpn_port: int
+
 
 class ServerPublicInfo(pydantic.BaseModel):
     name: str = pydantic.Field(..., description="Имя сервера")
     ip: str = pydantic.Field(..., description="IP сервера")
     port: int = pydantic.Field(..., ge=1, le=65535, description="Порт сервера")
     api_version: str
+
+    vpn_ip: str
+    vpn_port: int
 
 
 class ServerCreate(pydantic.BaseModel):

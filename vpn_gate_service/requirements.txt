@@ -1,5 +1,6 @@
 alembic
 asyncpg
+cryptography
 docker
 fastapi
 faststream

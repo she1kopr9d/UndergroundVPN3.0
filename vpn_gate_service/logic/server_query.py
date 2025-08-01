@@ -1,6 +1,8 @@
 import uuid
 import httpx
 
+import config
+
 import schemas.config
 import schemas.servers
 import schemas.telegram
@@ -8,6 +10,26 @@ import schemas.telegram
 import database.io.server
 import database.io.config
 import database.io.telegram_user
+
+
+async def create_config_url(
+    user_uuid: str,
+    user_email: str,
+    server_data: schemas.servers.ServerPublicInfo,
+) -> str:
+    vless_link = (
+        "vless://"
+        f"{user_uuid}@{server_data.vpn_ip}:{server_data.vpn_port}"
+        f"?encryption={config.xray.ENCRYPTION}"
+        "&flow=xtls-rprx-vision"
+        f"&security={config.xray.SECURITY}"
+        f"&sni={config.xray.HOST}"
+        f"&fp={config.xray.FINGERPRINT}"
+        f"&pbk={config.xray.PUBLICKEY}"
+        f"&sid={config.xray.SHORTID}"
+        f"&type={config.xray.NET_TYPE}#{user_email}"
+    )
+    return vless_link
 
 
 async def create_config(
@@ -18,9 +40,12 @@ async def create_config(
         user_id=create_data.user_id,
     )
     user_uuid = uuid.uuid4()
+    user_email = str(user_uuid) + "@user.id"
+    secret_key = database.io.server.get_secret_key_by_name(server_data.name)
     payload = {
-        "email": str(user_uuid) + "@user.id",
+        "email": user_email,
         "uuid": str(user_uuid),
+        "secret_key": secret_key,
     }
     async with httpx.AsyncClient() as client:
         response = await client.post(
@@ -31,16 +56,15 @@ async def create_config(
 
     data = response.json()
 
-    if data["status"] != "ok":
-        raise RuntimeError("Ошибка при создании конфигурации")
+    # data["status"] - exists/created
 
     server_id = database.io.server.get_server_id_by_name(server_data.name)
-
+    config_url = await create_config_url(user_uuid, user_email, server_data)
     await database.io.config.create_config(
         uuid=str(user_uuid),
-        config=data["config"],
+        config=config_url,
         server_id=server_id,
         user_data=user_data,
     )
 
-    return data["config"]
+    return config_url

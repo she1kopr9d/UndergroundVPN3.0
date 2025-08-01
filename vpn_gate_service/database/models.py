@@ -4,7 +4,7 @@ import datetime
 import sqlalchemy
 import sqlalchemy.orm
 
-import database.core # noqa
+import database.core  # noqa
 
 
 intpk = typing.Annotated[int, sqlalchemy.orm.mapped_column(primary_key=True)]
@@ -85,6 +85,12 @@ class Server(Base):
         )
     )
 
+    config = sqlalchemy.orm.relationship(
+        "ServerConfig",
+        back_populates="server",
+        uselist=False,
+    )
+
 
 class Config(Base):
     __tablename__ = "configs"
@@ -113,4 +119,29 @@ class Config(Base):
 
     user: sqlalchemy.orm.Mapped["TelegramUser"] = sqlalchemy.orm.relationship(
         back_populates="configs",
+    )
+
+
+class ServerConfig(Base):
+    __tablename__ = "server_configs"
+
+    id: sqlalchemy.orm.Mapped[intpk]
+    public_key: sqlalchemy.orm.Mapped[str]
+    private_key: sqlalchemy.orm.Mapped[str]
+    config_data: sqlalchemy.orm.Mapped[dict] = (
+        sqlalchemy.orm.mapped_column(sqlalchemy.JSON)
+    )
+    created_at: sqlalchemy.orm.Mapped[created_at]
+    updated_at: sqlalchemy.orm.Mapped[updated_at]
+
+    # server
+    server_id = sqlalchemy.Column(
+        sqlalchemy.Integer,
+        sqlalchemy.ForeignKey('servers.id'),
+        unique=True,
+    )
+    server = sqlalchemy.orm.relationship(
+        "Server",
+        back_populates="config",
+        uselist=False,
     )

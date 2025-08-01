@@ -1,0 +1,34 @@
+services:
+  vpn_service:
+    build:
+      context: ./vpn_service/
+    container_name: vpn_service
+    restart: unless-stopped
+    ports:
+      - "44344:44344"
+    volumes:
+      - ./vpn_service/config.json:/opt/myvpn/config.json:ro
+    environment:
+      - TZ=Asia/Shanghai
+    networks:
+      - undergroundvpn
+
+  api_service:
+    build: ./api_service
+    container_name: api_service
+    ports:
+      - "8010:8000"
+    env_file:
+      - .env
+    environment:
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./vpn_service/config.json:/opt/myvpn/config.json:rw
+      - /usr/local/bin/xray:/usr/local/bin/xray:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - undergroundvpn
+
+networks:
+  undergroundvpn:
+    external: true

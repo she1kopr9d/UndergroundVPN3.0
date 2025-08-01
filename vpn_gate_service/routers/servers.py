@@ -1,3 +1,4 @@
+import json
 import fastapi
 import asyncio
 import typing
@@ -24,8 +25,12 @@ async def server_auth(request: schemas.servers.ServerAuth):
         ip=request.ip,
         port=request.port,
         api_version=request.api_version,
+        vpn_ip=request.vpn_ip,
+        vpn_port=request.vpn_port,
     )
     logic.server_session.register_server(public_info)
+    server_id = database.io.server.get_server_id_by_name(request.name)
+    config_data = database.io.server.get_server_config_data(server_id)
 
     await router.broker.publish(
         {
@@ -37,7 +42,11 @@ async def server_auth(request: schemas.servers.ServerAuth):
         },
         queue="notification_auth_server",
     )
-    return {"status": "ok", "message": "Сервер авторизован"}
+    return {
+        "status": "ok",
+        "message": "Сервер авторизован",
+        "config": json.dumps(config_data),
+    }
 
 
 @router.post("/server/handshake")
@@ -52,6 +61,8 @@ async def server_handshake(request: schemas.servers.ServerAuth):
         ip=request.ip,
         port=request.port,
         api_version=request.api_version,
+        vpn_ip=request.vpn_ip,
+        vpn_port=request.vpn_port,
     )
     logic.server_session.update_handshake(public_info)
 
