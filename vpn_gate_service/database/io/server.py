@@ -1,5 +1,6 @@
 import sqlalchemy
 import sqlalchemy.orm
+import typing
 
 import database.database
 import database.models
@@ -76,3 +77,37 @@ def get_secret_key_by_name(name: str) -> str:
         )
         result = session.execute(stmt).scalar_one_or_none()
         return result
+
+
+async def add_user_in_config(
+    uuid: str,
+    email: str,
+    server_id: int,
+    client_data_formatter: typing.Callable,
+    client_add_executor: typing.Callable,
+) -> None:
+    client_data = client_data_formatter(
+        uuid,
+        email,
+    )
+
+    async with database.database.async_session_factory() as session:
+        stmt: sqlalchemy.Select = sqlalchemy.select(
+            database.models.ServerConfig
+        ).where(database.models.ServerConfig.server_id == server_id)
+        result = await session.execute(stmt)
+        config_obj: database.models.ServerConfig | None = (
+            result.scalar_one_or_none()
+        )
+        temp_config_data = config_obj.config_data.copy()
+        client_add_executor(
+            temp_config_data,
+            client_data,
+        )
+        stmt: sqlalchemy.Select = (
+            sqlalchemy.update(database.models.ServerConfig)
+            .where(database.models.ServerConfig.server_id == server_id)
+            .values(config_data=temp_config_data)
+        )
+        await session.execute(stmt)
+        await session.commit()

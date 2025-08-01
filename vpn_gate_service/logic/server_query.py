@@ -40,13 +40,14 @@ async def create_config(
         user_id=create_data.user_id,
     )
     user_uuid = uuid.uuid4()
-    user_email = str(user_uuid) + "@user.id"
+    user_email = create_data.config_name + "@user.id"
     secret_key = database.io.server.get_secret_key_by_name(server_data.name)
     payload = {
         "email": user_email,
         "uuid": str(user_uuid),
         "secret_key": secret_key,
     }
+
     async with httpx.AsyncClient() as client:
         response = await client.post(
             f"http://{server_data.ip}:{server_data.port}/user/add",
@@ -55,16 +56,34 @@ async def create_config(
         )
 
     data = response.json()
-
-    # data["status"] - exists/created
+    valid_status = ["exists", "created"]
+    if data["status"] not in valid_status:
+        raise RuntimeError("cell server drop error")
 
     server_id = database.io.server.get_server_id_by_name(server_data.name)
     config_url = await create_config_url(user_uuid, user_email, server_data)
     await database.io.config.create_config(
+        name=create_data.config_name,
         uuid=str(user_uuid),
         config=config_url,
         server_id=server_id,
         user_data=user_data,
+    )
+    await database.io.server.add_user_in_config(
+        str(user_uuid),
+        user_email,
+        server_id,
+        lambda temp_uuid, temp_email: {
+            "email": temp_email,
+            "id": temp_uuid,
+            "flow": "xtls-rprx-vision",
+            "level": 0,
+        },
+        lambda temp_config_data, temp_client_data: (
+            temp_config_data["inbounds"][0]["settings"]["clients"].append(
+                temp_client_data
+            )
+        ),
     )
 
     return config_url

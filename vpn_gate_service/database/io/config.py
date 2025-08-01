@@ -1,11 +1,10 @@
-import sqlalchemy
-
 import database.database
 import database.models
 import schemas.telegram
 
 
 async def create_config(
+    name: str,
     uuid: str,
     config: str,
     server_id: int,
@@ -13,7 +12,7 @@ async def create_config(
 ) -> None:
     async with database.database.async_session_factory() as session:
         new_config = database.models.Config(
-            name=f"config {uuid}",
+            name=name,
             uuid=uuid,
             config=config,
             server_id=server_id,

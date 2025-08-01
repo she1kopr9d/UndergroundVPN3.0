@@ -128,8 +128,8 @@ class ServerConfig(Base):
     id: sqlalchemy.orm.Mapped[intpk]
     public_key: sqlalchemy.orm.Mapped[str]
     private_key: sqlalchemy.orm.Mapped[str]
-    config_data: sqlalchemy.orm.Mapped[dict] = (
-        sqlalchemy.orm.mapped_column(sqlalchemy.JSON)
+    config_data: sqlalchemy.orm.Mapped[dict] = sqlalchemy.orm.mapped_column(
+        sqlalchemy.JSON
     )
     created_at: sqlalchemy.orm.Mapped[created_at]
     updated_at: sqlalchemy.orm.Mapped[updated_at]
@@ -137,7 +137,7 @@ class ServerConfig(Base):
     # server
     server_id = sqlalchemy.Column(
         sqlalchemy.Integer,
-        sqlalchemy.ForeignKey('servers.id'),
+        sqlalchemy.ForeignKey("servers.id"),
         unique=True,
     )
     server = sqlalchemy.orm.relationship(

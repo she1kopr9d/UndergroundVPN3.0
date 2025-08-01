@@ -4,7 +4,7 @@ up-main:
 	docker-compose -f docker-compose.yml up -d --build
 
 up-cell:
-	docker-compose -f vpn_cell_service/docker-compose.yml up -d --build
+	docker-compose -f vpn_cell_service_2/docker-compose.yml up -d --build
 
 up: up-main up-cell
 
@@ -12,7 +12,7 @@ down-main:
 	docker-compose -f docker-compose.yml down
 
 down-cell:
-	docker-compose -f vpn_cell_service/docker-compose.yml down
+	docker-compose -f vpn_cell_service_2/docker-compose.yml down
 
 down: down-cell down-main
 

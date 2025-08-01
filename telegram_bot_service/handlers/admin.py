@@ -45,16 +45,21 @@ async def get_servers_handler(message: aiogram.types.Message):
     aiogram.filters.Command("cc"),
 )
 async def create_config_handler(message: aiogram.types.Message):
-    if len(message.text.split()) < 2:
+    if len(message.text.split()) < 3:
         await message.answer(
-            ("Эта команда требует один аргумент" "/сc <server_name:str>")
+            (
+                "Эта команда требует два аргумента"
+                "/сc <server_name:str> <config_name:str>"
+            )
         )
         return
     server_name = message.text.split()[1]
+    config_name = message.text.split()[2]
     await rabbit.broker.publish(
         {
             "user_id": message.from_user.id,
             "server_name": server_name,
+            "config_name": config_name,
         },
         queue="create_config",
     )
