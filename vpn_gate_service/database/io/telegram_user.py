@@ -56,6 +56,28 @@ async def user_is_admin(data: schemas.telegram.UserData) -> bool:
         return bool(is_admin)
 
 
+async def set_handle(data: schemas.telegram.UserData):
+    async with database.core.async_session_factory() as session:
+        stmt = (
+            sqlalchemy.update(database.models.TelegramUser)
+            .where(database.models.TelegramUser.telegram_id == data.user_id)
+            .values(is_handle=True)
+        )
+        await session.execute(stmt)
+        await session.commit()
+
+
+async def user_is_handle(data: schemas.telegram.UserData) -> bool:
+    async with database.core.async_session_factory() as session:
+        result = await session.execute(
+            sqlalchemy.select(database.models.TelegramUser.is_handle).where(
+                database.models.TelegramUser.telegram_id == data.user_id
+            )
+        )
+        is_handle = result.scalar_one_or_none()
+        return bool(is_handle)
+
+
 async def get_telegram_user_data(
     user_id: int,
 ) -> schemas.telegram.UserAllData | None:

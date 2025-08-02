@@ -20,3 +20,15 @@ async def user_is_admin(data: schemas.telegram.UserData):
             "is_admin": is_admin,
         },
     }
+
+
+@router.post("/user/is_handle")
+async def user_is_handle(data: schemas.telegram.UserData):
+    is_handle = await database.io.telegram_user.user_is_handle(data)
+    return {
+        "status": "ok",
+        "data": {
+            "user": data,
+            "is_handle": is_handle,
+        },
+    }

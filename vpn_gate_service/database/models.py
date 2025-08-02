@@ -40,6 +40,12 @@ class TelegramUser(Base):
         default=False,
         nullable=False,
     )
+    is_handle = sqlalchemy.Column(
+        sqlalchemy.Boolean,
+        default=False,
+        nullable=False,
+        server_default=sqlalchemy.false(),
+    )
     username = sqlalchemy.Column(sqlalchemy.String)
     created_at: sqlalchemy.orm.Mapped[created_at]
     updated_at: sqlalchemy.orm.Mapped[updated_at]

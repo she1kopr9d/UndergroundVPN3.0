@@ -54,19 +54,16 @@ async def create_config(
         "uuid": str(user_uuid),
         "secret_key": secret_key,
     }
-
     async with httpx.AsyncClient() as client:
         response = await client.post(
             f"http://{server_data.ip}:{server_data.port}/user/add",
             json=payload,
             timeout=10.0,
         )
-
     data = response.json()
     valid_status = ["exists", "created"]
     if data["status"] not in valid_status:
         raise RuntimeError("cell server drop error")
-
     server_id = database.io.server.get_server_id_by_name(server_data.name)
     config_url = await create_config_url(user_uuid, user_email, server_data)
     await database.io.config.create_config(
@@ -92,7 +89,6 @@ async def create_config(
             )
         ),
     )
-
     return config_url
 
 
@@ -109,21 +105,17 @@ async def delete_config(
         "uuid": str(user_uuid),
         "secret_key": secret_key,
     }
-
     async with httpx.AsyncClient() as client:
         response = await client.post(
             f"http://{server_data.ip}:{server_data.port}/user/remove",
             json=payload,
             timeout=10.0,
         )
-
     data = response.json()
     valid_status = ["not exists", "deleted"]
     if data["status"] not in valid_status:
         raise RuntimeError("cell server drop error")
-
     server_id = database.io.server.get_server_id_by_name(server_data.name)
-
     await database.io.server.delete_user_from_config(
         str(user_uuid),
         server_id,

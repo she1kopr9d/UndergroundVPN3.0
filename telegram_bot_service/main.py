@@ -7,8 +7,9 @@ import aiogram
 import deps
 import rabbit
 
-import handlers.user
 import handlers.admin
+import handlers.deposit
+import handlers.user
 
 import subscribers.user  # noqa
 import subscribers.admin  # noqa
@@ -21,8 +22,9 @@ async def main():
     mode = sys.argv[1]
     print("Starting bot")
     if mode == "bot":
-        dp.include_router(handlers.user.router)
         dp.include_router(handlers.admin.router)
+        dp.include_router(handlers.deposit.router)
+        dp.include_router(handlers.user.router)
         async with rabbit.broker:
             await rabbit.broker.start()
             await dp.start_polling(deps.bot)

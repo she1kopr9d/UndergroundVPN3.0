@@ -142,3 +142,19 @@ async def delete_config_command_handler(
         data.user_id,
         data.message_id,
     )
+
+
+@rabbit.broker.subscriber("handle_add_answer")
+async def handle_add_handler(
+    data: schemas.user.UserIdANSW,
+):
+    bot = await deps.get_bot()
+
+    await bot.send_message(
+        chat_id=data.user_id,
+        text=(
+            "Поздравляю, теперь я уверен, что вам можно"
+            " доверять, теперь у вас доступен способ "
+            "пополнения напрямую мне на карточку. Приятного пользования"
+        ),
+    )

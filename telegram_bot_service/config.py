@@ -11,6 +11,8 @@ class Settings(pydantic_settings.BaseSettings):
 
     GATE_URL: str
 
+    HANDLE_CODE: str
+
     @property
     def rabbitmq_url(self):
         return (

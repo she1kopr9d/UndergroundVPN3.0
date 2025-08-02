@@ -198,3 +198,16 @@ async def conf_delete_handler(
         },
         queue="delete_config_command_answer",
     )
+
+
+@router.subscriber("handle_add")
+async def handle_add_handler(
+    data: schemas.telegram.UserData,
+):
+    await database.io.telegram_user.set_handle(data)
+    await router.broker.publish(
+        {
+            "user_id": data.user_id,
+        },
+        queue="handle_add_answer",
+    )

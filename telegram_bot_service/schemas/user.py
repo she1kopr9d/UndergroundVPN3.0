@@ -44,3 +44,7 @@ class ReferralCommandData(schemas.base.BasePage):
     referral_percentage: int
     referrer_username: str | None
     message_id: int
+
+
+class UserIdANSW(pydantic.BaseModel):
+    user_id: int
