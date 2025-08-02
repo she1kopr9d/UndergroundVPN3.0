@@ -30,11 +30,19 @@ class CreateServerData(pydantic.BaseModel):
     secret_key: str
 
 
-class RefPage(pydantic.BaseModel):
+class PagginationPage(pydantic.BaseModel):
     user_id: int
     page: int
     pagination: int
     message_id: int
+
+
+class RefPage(PagginationPage):
+    pass
+
+
+class ConfPage(PagginationPage):
+    pass
 
 
 class Referral(pydantic.BaseModel):

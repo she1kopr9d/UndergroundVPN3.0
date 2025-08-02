@@ -1,6 +1,8 @@
 import pydantic
 import typing
 
+import schemas.base
+
 
 class StartDataANSW(pydantic.BaseModel):
     user_id: int
@@ -36,11 +38,11 @@ class Referral(pydantic.BaseModel):
     username: str
 
 
-class ReferralCommandData(pydantic.BaseModel):
+class ReferralCommandData(
+    schemas.base.BasePage
+):
     user_id: int
     referrals: typing.List[Referral] | None
     referral_percentage: int
     referrer_username: str | None
-    max_page: int
-    now_page: int
     message_id: int

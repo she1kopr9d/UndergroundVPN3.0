@@ -83,9 +83,11 @@ async def get_referrer_username(
     async with database.core.async_session_factory() as session:
         stmt = (
             sqlalchemy.select(database.models.TelegramUser)
-            .options(sqlalchemy.orm.selectinload(
-                database.models.TelegramUser.referrer,
-            ))
+            .options(
+                sqlalchemy.orm.selectinload(
+                    database.models.TelegramUser.referrer,
+                )
+            )
             .where(database.models.TelegramUser.telegram_id == telegram_id)
         )
         result = await session.execute(stmt)

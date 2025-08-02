@@ -1,11 +1,20 @@
 import faststream.rabbit.fastapi
 
-import schemas.telegram
-import database.io.telegram_user
+import config
+
+import database.io.base
+import database.io.config
 import database.io.finance_account
 import database.io.referrals
+import database.io.telegram_user
 import database.models
-import config
+
+import schemas.config
+import schemas.telegram
+import schemas.servers
+
+import logic.server_session
+import logic.server_query
 
 
 router = faststream.rabbit.fastapi.RabbitRouter(config.rabbitmq.rabbitmq_url)
@@ -99,4 +108,60 @@ async def ref_command_handler(data: schemas.telegram.RefPage):
             "message_id": data.message_id,
         },
         queue="ref_command_answer",
+    )
+
+
+@router.subscriber("conf_command")
+async def conf_command_handler(data: schemas.telegram.RefPage):
+    configs, max_page = (
+        await database.io.config.get_configs_with_pagination(data)
+    )
+    await router.broker.publish(
+        {
+            "user_id": data.user_id,
+            "message_id": data.message_id,
+            "configs": configs,
+            "max_page": max_page,
+            "now_page": data.page,
+        },
+        queue="conf_command_answer",
+    )
+
+
+@router.subscriber("conf_info_command")
+async def conf_info_handler(
+    data: schemas.config.ConfigGetInfo,
+):
+    config_obj: database.models.Config = (
+        await database.io.base.get_object_by_id(
+            id=data.config_id,
+            object_class=database.models.Config,
+        )
+    )
+    server_obj: database.models.Server = (
+        await database.io.base.get_object_by_id(
+            id=config_obj.server_id,
+            object_class=database.models.Server,
+        )
+    )
+    server_data: schemas.servers.ServerPublicInfo = (
+        logic.server_session.get_active_server(server_obj.name)
+    )
+    conf_url = await logic.server_query.create_config_url(
+        user_uuid=config_obj.uuid,
+        user_email=logic.server_query.get_user_email(config_obj.name),
+        server_data=server_data,
+    )
+    await router.broker.publish(
+        {
+            "user_id": data.user_id,
+            "message_id": data.message_id,
+            "config_id": data.config_id,
+            "config_name": config_obj.name,
+            "config_url": conf_url,
+            "server_id": server_obj.id,
+            "server_name": server_obj.name,
+            "now_page": data.now_page,
+        },
+        queue="conf_info_command_answer"
     )

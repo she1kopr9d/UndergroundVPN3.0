@@ -12,6 +12,10 @@ import database.io.config
 import database.io.telegram_user
 
 
+def get_user_email(user_name: str) -> str:
+    return f"{user_name}@user.id"
+
+
 async def create_config_url(
     user_uuid: str,
     user_email: str,
@@ -40,7 +44,7 @@ async def create_config(
         user_id=create_data.user_id,
     )
     user_uuid = uuid.uuid4()
-    user_email = create_data.config_name + "@user.id"
+    user_email = get_user_email(create_data.config_name)
     secret_key = database.io.server.get_secret_key_by_name(server_data.name)
     payload = {
         "email": user_email,

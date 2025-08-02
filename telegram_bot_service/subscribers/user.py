@@ -1,9 +1,10 @@
-import rabbit
-import deps
-import schemas.user
-
+import content.config
 import content.user
+import deps
 import keyboards
+import rabbit
+import schemas.config
+import schemas.user
 
 
 @rabbit.broker.subscriber("start_command_answer")
@@ -90,4 +91,41 @@ async def ref_command_handler(
         ),
         parse_mode="Markdown",
         **kwargs,
+    )
+
+
+@rabbit.broker.subscriber("conf_command_answer")
+async def conf_command_handler(
+    data: schemas.config.ConfigPageANSW,
+):
+    bot = await deps.get_bot()
+    kwargs = dict()
+    if data.configs:
+        kwargs.update(
+            {
+                "reply_markup": keyboards.build_configs_keyboard(data),
+            }
+        )
+
+    await bot.edit_message_text(
+        chat_id=data.user_id,
+        message_id=data.message_id,
+        text="*Ваши конфиги*",
+        parse_mode="Markdown",
+        **kwargs,
+    )
+
+
+@rabbit.broker.subscriber("conf_info_command_answer")
+async def conf_info_command_handler(
+    data: schemas.config.ConfigInfoANSW,
+):
+    bot = await deps.get_bot()
+
+    await bot.edit_message_text(
+        chat_id=data.user_id,
+        message_id=data.message_id,
+        text=content.config.CONFIG_INFO(data),
+        reply_markup=keyboards.build_config_info_keyboard(data),
+        parse_mode="Markdown",
     )
