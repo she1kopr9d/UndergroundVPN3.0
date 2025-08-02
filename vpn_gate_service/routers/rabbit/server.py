@@ -16,10 +16,6 @@ router = faststream.rabbit.fastapi.RabbitRouter(config.rabbitmq.rabbitmq_url)
 
 @router.subscriber("create_config")
 async def handle_create_config(data: schemas.config.CreateConfig):
-    if not logic.server_session.is_authorized(data.server_name):
-        raise fastapi.HTTPException(
-            status_code=401, detail="This server is not active"
-        )
     server = logic.server_session.get_active_server(data.server_name)
 
     config_url = await logic.server_query.create_config(

@@ -38,9 +38,7 @@ class Referral(pydantic.BaseModel):
     username: str
 
 
-class ReferralCommandData(
-    schemas.base.BasePage
-):
+class ReferralCommandData(schemas.base.BasePage):
     user_id: int
     referrals: typing.List[Referral] | None
     referral_percentage: int

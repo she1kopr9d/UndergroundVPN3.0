@@ -3,8 +3,10 @@ import content.user
 import deps
 import keyboards
 import rabbit
+import schemas.base
 import schemas.config
 import schemas.user
+import logic.list_menu
 
 
 @rabbit.broker.subscriber("start_command_answer")
@@ -128,4 +130,15 @@ async def conf_info_command_handler(
         text=content.config.CONFIG_INFO(data),
         reply_markup=keyboards.build_config_info_keyboard(data),
         parse_mode="Markdown",
+    )
+
+
+@rabbit.broker.subscriber("delete_config_command_answer")
+async def delete_config_command_handler(
+    data: schemas.base.DefaultTelegramANSW,
+):
+    await logic.list_menu.publish_list_menu(
+        "conf_command",
+        data.user_id,
+        data.message_id,
     )

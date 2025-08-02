@@ -16,3 +16,8 @@ class BaseTelegram(pydantic.BaseModel):
 class BasePage(pydantic.BaseModel):
     max_page: int
     now_page: int
+
+
+class DefaultTelegramANSW(pydantic.BaseModel):
+    user_id: int
+    message_id: int

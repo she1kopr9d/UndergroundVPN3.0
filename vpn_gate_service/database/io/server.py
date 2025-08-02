@@ -111,3 +111,38 @@ async def add_user_in_config(
         )
         await session.execute(stmt)
         await session.commit()
+
+
+async def delete_user_from_config(
+    uuid: str,
+    server_id: int,
+    client_delete_executor: typing.Callable,
+) -> None:
+    async with database.core.async_session_factory() as session:
+        stmt: sqlalchemy.Select = sqlalchemy.select(
+            database.models.ServerConfig
+        ).where(database.models.ServerConfig.server_id == server_id)
+        result = await session.execute(stmt)
+        config_obj: database.models.ServerConfig | None = (
+            result.scalar_one_or_none()
+        )
+
+        if not config_obj:
+            return
+
+        temp_config_data = config_obj.config_data.copy()
+
+        temp_config_data["inbounds"][0]["settings"]["clients"] = (
+            client_delete_executor(
+                temp_config_data,
+                uuid,
+            )
+        )
+
+        update_stmt = (
+            sqlalchemy.update(database.models.ServerConfig)
+            .where(database.models.ServerConfig.server_id == server_id)
+            .values(config_data=temp_config_data)
+        )
+        await session.execute(update_stmt)
+        await session.commit()

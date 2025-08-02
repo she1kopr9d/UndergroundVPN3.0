@@ -94,24 +94,64 @@ def build_configs_keyboard(
     return aiogram.types.InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
 
 
+def build_config_button(
+    text: str,
+    action: str,
+    config_id: int,
+    user_id: int,
+    now_page: int,
+    message_id: int,
+):
+    return aiogram.types.InlineKeyboardButton(
+        text=text,
+        callback_data=callback.ConfigCallback(
+            action=action,
+            config_id=config_id,
+            user_id=user_id,
+            page=now_page,
+            message_id=message_id,
+        ).pack(),
+    )
+
+
 def build_config_info_keyboard(
-    data: schemas.config.ConfigInfoANSW
+    data: schemas.config.ConfigInfoANSW,
 ) -> aiogram.types.InlineKeyboardMarkup:
     inline_keyboard = []
     for text, action in [
         ("Удалить", "delete_1"),
         ("Назад", "back"),
     ]:
-        inline_keyboard.append([
-            aiogram.types.InlineKeyboardButton(
-                text=text,
-                callback_data=callback.ConfigCallback(
-                    action=action,
-                    config_id=data.config_id,
-                    user_id=data.user_id,
-                    page=data.now_page,
-                    message_id=data.message_id,
-                ).pack(),
-            )
-        ])
+        inline_keyboard.append(
+            [
+                build_config_button(
+                    text,
+                    action,
+                    data.config_id,
+                    data.user_id,
+                    data.now_page,
+                    data.message_id,
+                )
+            ]
+        )
+    return aiogram.types.InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
+
+
+def build_delete_accept_keyboard(
+    data: callback.ConfigCallback,
+) -> aiogram.types.InlineKeyboardMarkup:
+    inline_keyboard = []
+    for text, action in [("Отмена", "open"), ("Удалить", "delete_2")]:
+        inline_keyboard.append(
+            [
+                build_config_button(
+                    text,
+                    action,
+                    data.config_id,
+                    data.user_id,
+                    data.page,
+                    data.message_id,
+                )
+            ]
+        )
     return aiogram.types.InlineKeyboardMarkup(inline_keyboard=inline_keyboard)

@@ -1,9 +1,7 @@
 import aiogram.filters.callback_data
 
 
-class PageCallback(
-    aiogram.filters.callback_data.CallbackData, prefix="page"
-):
+class PageCallback(aiogram.filters.callback_data.CallbackData, prefix="page"):
     user_id: int
     page: int
     message_id: int

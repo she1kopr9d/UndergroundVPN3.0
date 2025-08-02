@@ -113,8 +113,8 @@ async def ref_command_handler(data: schemas.telegram.RefPage):
 
 @router.subscriber("conf_command")
 async def conf_command_handler(data: schemas.telegram.RefPage):
-    configs, max_page = (
-        await database.io.config.get_configs_with_pagination(data)
+    configs, max_page = await database.io.config.get_configs_with_pagination(
+        data
     )
     await router.broker.publish(
         {
@@ -163,5 +163,38 @@ async def conf_info_handler(
             "server_name": server_obj.name,
             "now_page": data.now_page,
         },
-        queue="conf_info_command_answer"
+        queue="conf_info_command_answer",
+    )
+
+
+@router.subscriber("delete_config_command")
+async def conf_delete_handler(
+    data: schemas.config.ConfigGetInfo,
+):
+    config_obj: database.models.Config = (
+        await database.io.base.get_object_by_id(
+            id=data.config_id,
+            object_class=database.models.Config,
+        )
+    )
+    server_obj: database.models.Server = (
+        await database.io.base.get_object_by_id(
+            id=config_obj.server_id,
+            object_class=database.models.Server,
+        )
+    )
+    server_data: schemas.servers.ServerPublicInfo = (
+        logic.server_session.get_active_server(server_obj.name)
+    )
+    await logic.server_query.delete_config(
+        data,
+        server_data,
+        config_obj,
+    )
+    await router.broker.publish(
+        {
+            "user_id": data.user_id,
+            "message_id": data.message_id,
+        },
+        queue="delete_config_command_answer",
     )

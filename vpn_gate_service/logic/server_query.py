@@ -7,9 +7,12 @@ import schemas.config
 import schemas.servers
 import schemas.telegram
 
+import database.io.base
 import database.io.server
 import database.io.config
 import database.io.telegram_user
+
+import database.models
 
 
 def get_user_email(user_name: str) -> str:
@@ -91,3 +94,50 @@ async def create_config(
     )
 
     return config_url
+
+
+async def delete_config(
+    data: schemas.config.ConfigGetInfo,
+    server_data: schemas.servers.ServerPublicInfo,
+    config_obj: database.models.Config,
+):
+    user_uuid = uuid.uuid4()
+    user_email = get_user_email(config_obj.name)
+    secret_key = database.io.server.get_secret_key_by_name(server_data.name)
+    payload = {
+        "email": user_email,
+        "uuid": str(user_uuid),
+        "secret_key": secret_key,
+    }
+
+    async with httpx.AsyncClient() as client:
+        response = await client.post(
+            f"http://{server_data.ip}:{server_data.port}/user/remove",
+            json=payload,
+            timeout=10.0,
+        )
+
+    data = response.json()
+    valid_status = ["not exists", "deleted"]
+    if data["status"] not in valid_status:
+        raise RuntimeError("cell server drop error")
+
+    server_id = database.io.server.get_server_id_by_name(server_data.name)
+
+    await database.io.server.delete_user_from_config(
+        str(user_uuid),
+        server_id,
+        lambda temp_config_data, temp_uuid: (
+            [
+                client
+                for client in temp_config_data["inbounds"][0]["settings"][
+                    "clients"
+                ]
+                if client["id"] != temp_uuid
+            ]
+        ),
+    )
+    await database.io.base.delete_object_by_id(
+        config_obj.id,
+        database.models.Config,
+    )

@@ -3,7 +3,10 @@ import aiogram.filters
 
 import rabbit
 import content.user
+import content.config
 import callback
+import keyboards
+import logic.list_menu
 
 
 router = aiogram.Router()
@@ -72,14 +75,10 @@ async def load_page_handler(
     queue: str,
 ):
     sent_message = await message.answer("Загружаю...")
-    await rabbit.broker.publish(
-        {
-            "user_id": message.from_user.id,
-            "page": 0,
-            "pagination": 3,
-            "message_id": sent_message.message_id,
-        },
+    await logic.list_menu.publish_list_menu(
         queue=queue,
+        user_id=message.from_user.id,
+        message_id=sent_message.message_id,
     )
 
 
@@ -93,21 +92,16 @@ async def conf_command_handler(message: aiogram.types.Message):
     await load_page_handler(message, "conf_command")
 
 
-@router.callback_query(
-    callback.PageCallback.filter()
-)
+@router.callback_query(callback.PageCallback.filter())
 async def page_query(
     query: aiogram.types.CallbackQuery,
     callback_data: callback.PageCallback,
 ):
-    await rabbit.broker.publish(
-        {
-            "user_id": callback_data.user_id,
-            "page": callback_data.page,
-            "pagination": 3,
-            "message_id": callback_data.message_id,
-        },
+    await logic.list_menu.publish_list_menu(
         queue=f"{callback_data.move}_command",
+        user_id=callback_data.user_id,
+        page=callback_data.page,
+        message_id=callback_data.message_id,
     )
 
 
@@ -134,9 +128,7 @@ async def ref_user_query(
 
 
 @router.callback_query(
-    callback.ConfigCallback.filter(
-        aiogram.F.action == "open"
-    )
+    callback.ConfigCallback.filter(aiogram.F.action == "open")
 )
 async def conf_user_query(
     query: aiogram.types.CallbackQuery,
@@ -154,9 +146,7 @@ async def conf_user_query(
 
 
 @router.callback_query(
-    callback.ConfigCallback.filter(
-        aiogram.F.action == "back"
-    )
+    callback.ConfigCallback.filter(aiogram.F.action == "back")
 )
 async def conf_user_back_query(
     query: aiogram.types.CallbackQuery,
@@ -170,4 +160,37 @@ async def conf_user_back_query(
             "message_id": callback_data.message_id,
         },
         queue="conf_command",
+    )
+
+
+@router.callback_query(
+    callback.ConfigCallback.filter(aiogram.F.action == "delete_1")
+)
+async def conf_user_delete_1_query(
+    query: aiogram.types.CallbackQuery,
+    callback_data: callback.ConfigCallback,
+):
+    await query.bot.edit_message_text(
+        chat_id=callback_data.user_id,
+        message_id=callback_data.message_id,
+        text=content.config.CONFIG_DELETE_QUESTION(),
+        reply_markup=keyboards.build_delete_accept_keyboard(callback_data),
+    )
+
+
+@router.callback_query(
+    callback.ConfigCallback.filter(aiogram.F.action == "delete_2")
+)
+async def conf_user_delete_2_query(
+    query: aiogram.types.CallbackQuery,
+    callback_data: callback.ConfigCallback,
+):
+    await rabbit.broker.publish(
+        {
+            "user_id": callback_data.user_id,
+            "config_id": callback_data.config_id,
+            "message_id": callback_data.message_id,
+            "now_page": callback_data.page,
+        },
+        queue="delete_config_command",
     )

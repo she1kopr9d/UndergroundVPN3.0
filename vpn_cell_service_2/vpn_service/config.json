@@ -73,6 +73,12 @@
             "id": "ccb31aa1-9969-45c2-ad46-2e03089b529d",
             "flow": "xtls-rprx-vision",
             "level": 0
+          },
+          {
+            "email": "hui-1@user.id",
+            "id": "6b153e47-bc49-403e-801c-f3b32850ccd9",
+            "flow": "xtls-rprx-vision",
+            "level": 0
           }
         ],
         "decryption": "none"

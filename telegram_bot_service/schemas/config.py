@@ -9,9 +9,7 @@ class ConfigInfo(pydantic.BaseModel):
     config_name: str
 
 
-class ConfigPageANSW(
-    schemas.base.BasePage
-):
+class ConfigPageANSW(schemas.base.BasePage):
     user_id: int
     message_id: int
     configs: typing.List[ConfigInfo] | None
