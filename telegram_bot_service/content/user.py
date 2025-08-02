@@ -1,3 +1,6 @@
+import schemas.user
+
+
 def START_COMMAND(
     server_count: int = 1,
     country_count: int = 1,
@@ -63,7 +66,6 @@ def HELP_COMMAND() -> str:
 /profile - выводит ваш профиль с данными
 /balance - выводит информацию платежного аккаунта
 /ref - выводит вашу реферальную ссылку и статистику
-/referrer - выводит никнейм пользователя, который привел вас
 
 <b>Конфиги</b>
 /conf - выводит вам все ваши конфиги
@@ -71,4 +73,36 @@ def HELP_COMMAND() -> str:
 
 <b>Платежи</b>
 /payment - выводит меню для пополнения баланса
+"""
+
+
+def PROFILE_COMMAND(
+    profile_data: schemas.user.ProfileData,
+    bot_username: str,
+) -> str:
+    return f"""
+*Профиль пользователя*
+
+*Id:* {profile_data.user_id}
+*Никнейм:* {profile_data.username}
+*Баланс:* {profile_data.balance}
+*Процент с рефералов:* {profile_data.referral_percentege}%
+
+
+🔗 *Ваша реферальная ссылка*:
+`https://t.me/{bot_username}?start={profile_data.user_id}`
+"""
+
+
+def REF_COMMAND(
+    referral_percentage: int,
+    referrer_username: str,
+) -> str:
+    referrer_username = referrer_username if referrer_username != None else "Отсутствует"
+    return f"""
+*Информация о рефералах*
+
+*Вы реферал у* @{referrer_username}
+
+*Ваш процент с рефералов:* {referral_percentage}%
 """

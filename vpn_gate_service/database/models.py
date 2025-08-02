@@ -5,8 +5,6 @@ import datetime
 import sqlalchemy
 import sqlalchemy.orm
 
-import database.core  # noqa
-
 
 intpk = typing.Annotated[int, sqlalchemy.orm.mapped_column(primary_key=True)]
 created_at = typing.Annotated[
@@ -159,9 +157,7 @@ class FinanceAccount(Base):
 
     id: sqlalchemy.orm.Mapped[intpk]
     balance: sqlalchemy.orm.Mapped[float] = sqlalchemy.Column(
-        sqlalchemy.Float,
-        default=0.0,
-        nullable=False
+        sqlalchemy.Float, default=0.0, nullable=False
     )
     referral_percent: sqlalchemy.orm.Mapped[int] = sqlalchemy.Column(
         sqlalchemy.Integer,
@@ -230,12 +226,10 @@ class Payment(Base):
             nullable=False,
         )
     )
-    mode: sqlalchemy.orm.Mapped[PaymentMode] = (
-        sqlalchemy.orm.mapped_column(
-            sqlalchemy.Enum(PaymentMode),
-            default=PaymentMode.production,
-            nullable=False,
-        )
+    mode: sqlalchemy.orm.Mapped[PaymentMode] = sqlalchemy.orm.mapped_column(
+        sqlalchemy.Enum(PaymentMode),
+        default=PaymentMode.production,
+        nullable=False,
     )
     payment_method: sqlalchemy.orm.Mapped[PaymentMethod] = (
         sqlalchemy.orm.mapped_column(
@@ -245,9 +239,7 @@ class Payment(Base):
     )
 
     external_id: sqlalchemy.orm.Mapped[str] = sqlalchemy.orm.mapped_column(
-        sqlalchemy.String,
-        nullable=True,
-        unique=True
+        sqlalchemy.String, nullable=True, unique=True
     )
 
     note: sqlalchemy.orm.Mapped[str] = sqlalchemy.orm.mapped_column(

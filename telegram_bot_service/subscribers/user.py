@@ -3,6 +3,7 @@ import deps
 import schemas.user
 
 import content.user
+import keyboards
 
 
 @rabbit.broker.subscriber("start_command_answer")
@@ -48,4 +49,45 @@ async def handle_new_referral(
         chat_id=data.referrer_user_id,
         text=content.user.NEW_REFERRAL(data.referral_username),
         parse_mode="Markdown",
+    )
+
+
+@rabbit.broker.subscriber("profile_command_answer")
+async def profile_command_handler(
+    data: schemas.user.ProfileData,
+):
+    bot = await deps.get_bot()
+
+    await bot.send_message(
+        chat_id=data.user_id,
+        text=content.user.PROFILE_COMMAND(
+            data,
+            bot_username=((await bot.get_me()).username),
+        ),
+        parse_mode="Markdown",
+    )
+
+
+@rabbit.broker.subscriber("ref_command_answer")
+async def ref_command_handler(
+    data: schemas.user.ReferralCommandData,
+):
+    bot = await deps.get_bot()
+    kwargs = dict()
+    if data.referrals:
+        kwargs.update(
+            {
+                "reply_markup": keyboards.build_referrals_keyboard(data),
+            }
+        )
+
+    await bot.edit_message_text(
+        chat_id=data.user_id,
+        message_id=data.message_id,
+        text=content.user.REF_COMMAND(
+            referral_percentage=data.referral_percentage,
+            referrer_username=data.referrer_username,
+        ),
+        parse_mode="Markdown",
+        **kwargs,
     )

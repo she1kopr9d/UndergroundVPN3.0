@@ -3,6 +3,7 @@ import aiogram.filters
 
 import rabbit
 import content.user
+import callback
 
 
 router = aiogram.Router()
@@ -57,4 +58,40 @@ async def handle_help_command(message: aiogram.types.Message):
 
 @router.message(aiogram.filters.Command("profile"))
 async def handle_profile_command(message: aiogram.types.Message):
-    await message.answer("Здесь будет реализона команда /profile")
+    await rabbit.broker.publish(
+        {
+            "user_id": message.from_user.id,
+            "username": message.from_user.username,
+        },
+        queue="profile_command",
+    )
+
+
+@router.message(aiogram.filters.Command("ref"))
+async def ref_command_handler(message: aiogram.types.Message):
+    sent_message = await message.answer("Загружаю...")
+    await rabbit.broker.publish(
+        {
+            "user_id": message.from_user.id,
+            "page": 0,
+            "pagination": 3,
+            "message_id": sent_message.message_id,
+        },
+        queue="ref_command",
+    )
+
+
+@router.callback_query(callback.ReferralPageCallback.filter())
+async def ref_page_query(
+    query: aiogram.types.CallbackQuery,
+    callback_data: callback.ReferralPageCallback,
+):
+    await rabbit.broker.publish(
+        {
+            "user_id": callback_data.user_id,
+            "page": callback_data.page,
+            "pagination": 3,
+            "message_id": callback_data.message_id,
+        },
+        queue="ref_command",
+    )
