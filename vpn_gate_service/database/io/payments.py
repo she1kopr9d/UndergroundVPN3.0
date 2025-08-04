@@ -35,9 +35,11 @@ async def update_payment_status(
     new_status: database.models.PaymentStatus,
 ) -> bool:
     async with database.core.async_session_factory() as session:
-        stmt = sqlalchemy.update(database.models.Payment).where(
-            database.models.Payment.id == payment_id
-        ).values(status=new_status)
+        stmt = (
+            sqlalchemy.update(database.models.Payment)
+            .where(database.models.Payment.id == payment_id)
+            .values(status=new_status)
+        )
 
         result = await session.execute(stmt)
         await session.commit()

@@ -155,3 +155,35 @@ def build_delete_accept_keyboard(
             ]
         )
     return aiogram.types.InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
+
+
+def build_deposit_button(
+    user_id: int,
+    name: str,
+    method: str,
+) -> aiogram.types.InlineKeyboardButton:
+    return aiogram.types.InlineKeyboardButton(
+        text=name,
+        callback_data=callback.DepositCallback(
+            user_id=user_id,
+            deposit_method=method,
+        ).pack(),
+    )
+
+
+def build_deposit_keyboard(
+    user_id: int,
+    payment_methods: list,
+) -> aiogram.types.InlineKeyboardMarkup:
+    inline_keyboard = []
+    for method in payment_methods:
+        inline_keyboard.append(
+            [
+                build_deposit_button(
+                    user_id=user_id,
+                    name=method["title"],
+                    method=method["method"],
+                )
+            ]
+        )
+    return aiogram.types.InlineKeyboardMarkup(inline_keyboard=inline_keyboard)

@@ -28,3 +28,11 @@ class ConfigCallback(
     message_id: int
     config_id: int
     page: int
+
+
+class DepositCallback(
+    aiogram.filters.callback_data.CallbackData,
+    prefix="dep",
+):
+    user_id: int
+    deposit_method: str

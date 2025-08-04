@@ -1,11 +1,13 @@
 import content.config
 import content.user
+import content.deposite
 import deps
 import keyboards
 import rabbit
 import schemas.base
 import schemas.config
 import schemas.user
+import schemas.deposite
 import logic.list_menu
 
 
@@ -157,4 +159,18 @@ async def handle_add_handler(
             " доверять, теперь у вас доступен способ "
             "пополнения напрямую мне на карточку. Приятного пользования"
         ),
+    )
+
+
+@rabbit.broker.subscriber("create_payment_answer")
+async def create_payment_handler(
+    data: schemas.deposite.DepositeCreateANSW,
+):
+    bot = await deps.get_bot()
+
+    await bot.edit_message_text(
+        chat_id=data.user_id,
+        message_id=data.message_id,
+        text=content.deposite.DEPOSITE_INFO(data),
+        parse_mode="HTML",
     )
