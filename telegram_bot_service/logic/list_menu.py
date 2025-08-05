@@ -1,3 +1,5 @@
+import aiogram.types
+
 import rabbit
 
 
@@ -16,4 +18,16 @@ async def publish_list_menu(
             "message_id": message_id,
         },
         queue=queue,
+    )
+
+
+async def load_page_handler(
+    message: aiogram.types.Message,
+    queue: str,
+):
+    sent_message = await message.answer("Загружаю...")
+    await publish_list_menu(
+        queue=queue,
+        user_id=message.from_user.id,
+        message_id=sent_message.message_id,
     )

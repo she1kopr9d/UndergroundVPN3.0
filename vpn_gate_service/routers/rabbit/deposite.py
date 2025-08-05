@@ -64,3 +64,34 @@ async def create_payment_handle(
         },
         queue="create_payment_answer",
     )
+
+
+@router.subscriber("accept_deposit")
+async def accept_deposit_handle(
+    data: schemas.deposit.DepositeMoveData,
+):
+    await database.io.payments.update_payment_status(
+        data.payment_id,
+        database.models.PaymentStatus.moderation,
+    )
+    await router.broker.publish(
+        queue="new_moderation_payment",
+    )
+    await router.broker.publish(
+        {
+            "user_id": data.user_id,
+            "message_id": data.message_id,
+            "payment_id": data.payment_id,
+        },
+        queue="accept_deposit_answer",
+    )
+
+
+@router.subscriber("cancel_deposit")
+async def cansel_deposit_handle(
+    data: schemas.deposit.DepositeMoveData,
+):
+    await database.io.payments.update_payment_status(
+        data.payment_id,
+        database.models.PaymentStatus.failed,
+    )

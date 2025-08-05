@@ -2,6 +2,7 @@ import faststream.rabbit.fastapi
 
 import config
 import schemas.telegram
+import database.io.moderator
 import database.io.telegram_user
 
 
@@ -30,5 +31,20 @@ async def user_is_handle(data: schemas.telegram.UserData):
         "data": {
             "user": data,
             "is_handle": is_handle,
+        },
+    }
+
+
+@router.post("/user/is_moderator")
+async def user_is_moderator(data: schemas.telegram.UserData):
+    user_obj = await database.io.telegram_user.get_telegram_user_data(
+        data.user_id,
+    )
+    is_moderator = await database.io.moderator.is_moderator(user_obj.id)
+    return {
+        "status": "ok",
+        "data": {
+            "user": data,
+            "is_moderator": is_moderator,
         },
     }

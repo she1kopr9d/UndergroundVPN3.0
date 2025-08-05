@@ -45,6 +45,10 @@ class ConfPage(PagginationPage):
     pass
 
 
+class PayPage(PagginationPage):
+    pass
+
+
 class Referral(pydantic.BaseModel):
     user_id: int
     username: str
@@ -57,3 +61,8 @@ class ReferralCommandData(pydantic.BaseModel):
     referrer_username: str | None
     max_page: int
     now_page: int
+
+
+class PaymentMinInfo(pydantic.BaseModel):
+    payment_id: int
+    payment_method: str

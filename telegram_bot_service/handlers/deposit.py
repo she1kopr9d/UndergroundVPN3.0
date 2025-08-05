@@ -90,3 +90,42 @@ async def check_valid_amount_handler(
             message_id=data["message_id"],
             text=("Загрузка..."),
         )
+
+
+@router.callback_query(
+    callback.DepositAcceptCallback.filter(
+        aiogram.F.action == "accept",
+    )
+)
+async def accept_deposit_handler(
+    query: aiogram.types.CallbackQuery,
+    callback_data: callback.DepositAcceptCallback,
+):
+    await rabbit.broker.publish(
+        {
+            "user_id": callback_data.user_id,
+            "message_id": callback_data.message_id,
+            "payment_id": callback_data.payment_id,
+        },
+        queue="accept_deposit",
+    )
+
+
+@router.callback_query(
+    callback.DepositAcceptCallback.filter(
+        aiogram.F.action == "cancel",
+    )
+)
+async def cancel_deposit_handler(
+    query: aiogram.types.CallbackQuery,
+    callback_data: callback.DepositAcceptCallback,
+):
+    await rabbit.broker.publish(
+        {
+            "user_id": callback_data.user_id,
+            "message_id": callback_data.message_id,
+            "payment_id": callback_data.payment_id,
+        },
+        queue="cancel_deposit",
+    )
+    await query.message.delete()

@@ -3,6 +3,8 @@ import sqlalchemy
 import database.core
 import database.models
 
+import schemas.telegram
+
 
 async def create_payment(
     account_id: int,
@@ -44,3 +46,39 @@ async def update_payment_status(
         result = await session.execute(stmt)
         await session.commit()
         return result.rowcount > 0
+
+
+async def get_moderation_payments_with_pagination(
+    data: schemas.telegram.PayPage,
+) -> tuple[list[schemas.telegram.PaymentMinInfo], int]:
+    async with database.core.async_session_factory() as session:
+        stmt_count = sqlalchemy.select(sqlalchemy.func.count()).where(
+            database.models.Payment.status
+            == database.models.PaymentStatus.moderation
+        )
+        count_result = await session.execute(stmt_count)
+        total_count = count_result.scalar_one()
+
+        max_page = max(
+            (total_count + data.pagination - 1) // data.pagination,
+            1,
+        )
+        stmt_payments = (
+            sqlalchemy.select(database.models.Payment)
+            .where(
+                database.models.Payment.status
+                == database.models.PaymentStatus.moderation
+            )
+            .offset(data.page * data.pagination)
+            .limit(data.pagination)
+            .order_by(database.models.Payment.created_at.desc())
+        )
+        result = await session.execute(stmt_payments)
+        payments = result.scalars().all()
+        return [
+            schemas.telegram.PaymentMinInfo(
+                payment_id=payment.id,
+                payment_method=payment.payment_method.value,
+            )
+            for payment in payments
+        ], max_page

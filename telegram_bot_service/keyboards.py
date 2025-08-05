@@ -4,6 +4,8 @@ import callback
 import schemas.base
 import schemas.config
 import schemas.user
+import schemas.payments
+import schemas.deposite
 
 
 def get_paggination_row(
@@ -56,14 +58,14 @@ def build_referrals_keyboard(
             ).pack(),
         )
         inline_keyboard.append([button])
-    pagination_row = get_paggination_row(
+    paggination_row = get_paggination_row(
         data,
         data.user_id,
         data.message_id,
         "ref",
     )
-    if pagination_row:
-        inline_keyboard.append(pagination_row)
+    if paggination_row:
+        inline_keyboard.append(paggination_row)
     return aiogram.types.InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
 
 
@@ -83,14 +85,43 @@ def build_configs_keyboard(
             ).pack(),
         )
         inline_keyboard.append([button])
-    pagination_row = get_paggination_row(
+    paggination_row = get_paggination_row(
         data,
         data.user_id,
         data.message_id,
         "conf",
     )
-    if pagination_row:
-        inline_keyboard.append(pagination_row)
+    if paggination_row:
+        inline_keyboard.append(paggination_row)
+    return aiogram.types.InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
+
+
+def build_payments_keyboard(
+    data: schemas.payments.PaymentPageANSW,
+) -> aiogram.types.InlineKeyboardMarkup:
+    inline_keyboard = []
+    prefix = "pay_list"
+    for pay in data.payments:
+        button = aiogram.types.InlineKeyboardButton(
+            text=f"{pay.payment_id} {pay.payment_method}",
+            callback_data=callback.CellCallback(
+                action="open",
+                user_id=data.user_id,
+                message_id=data.message_id,
+                page=data.now_page,
+                external_id=pay.payment_id,
+                second_prefix=prefix,
+            ).pack(),
+        )
+        inline_keyboard.append([button])
+    paggination_row = get_paggination_row(
+        data,
+        data.user_id,
+        data.message_id,
+        prefix,
+    )
+    if paggination_row:
+        inline_keyboard.append(paggination_row)
     return aiogram.types.InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
 
 
@@ -186,4 +217,34 @@ def build_deposit_keyboard(
                 )
             ]
         )
+    return aiogram.types.InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
+
+
+def build_payment_accept_keyboard(
+    data: schemas.deposite.DepositeCreateANSW,
+):
+    inline_keyboard = [
+        [
+            aiogram.types.InlineKeyboardButton(
+                text="Подтвердить оплату",
+                callback_data=callback.DepositAcceptCallback(
+                    action="accept",
+                    user_id=data.user_id,
+                    message_id=data.message_id,
+                    payment_id=data.payment_id,
+                ).pack(),
+            )
+        ],
+        [
+            aiogram.types.InlineKeyboardButton(
+                text="Отменить",
+                callback_data=callback.DepositAcceptCallback(
+                    action="cancel",
+                    user_id=data.user_id,
+                    message_id=data.message_id,
+                    payment_id=data.payment_id,
+                ).pack(),
+            )
+        ],
+    ]
     return aiogram.types.InlineKeyboardMarkup(inline_keyboard=inline_keyboard)

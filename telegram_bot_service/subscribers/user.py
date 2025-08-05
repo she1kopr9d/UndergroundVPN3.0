@@ -8,6 +8,7 @@ import schemas.base
 import schemas.config
 import schemas.user
 import schemas.deposite
+import schemas.payments
 import logic.list_menu
 
 
@@ -172,5 +173,29 @@ async def create_payment_handler(
         chat_id=data.user_id,
         message_id=data.message_id,
         text=content.deposite.DEPOSITE_INFO(data),
+        reply_markup=keyboards.build_payment_accept_keyboard(
+            data,
+        ),
         parse_mode="HTML",
+    )
+
+
+@rabbit.broker.subscriber("accept_deposit_answer")
+async def accept_deposit_handler(
+    data: schemas.payments.PaymentIdANSW,
+):
+    bot = await deps.get_bot()
+
+    await bot.edit_message_reply_markup(
+        chat_id=data.user_id,
+        message_id=data.message_id,
+        reply_markup=None,
+    )
+    await bot.send_message(
+        chat_id=data.user_id,
+        text=(
+            "Ваш платеж в обработке, модерация проверит "
+            "его, после мы вам пополним баланс \n\n"
+            "Обычно это занимает не более 15 минут"
+        )
     )

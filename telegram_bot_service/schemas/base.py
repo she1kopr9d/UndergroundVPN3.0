@@ -1,16 +1,14 @@
 import pydantic
 
-import config
 
+# class BaseTelegram(pydantic.BaseModel):
+#     telegram_bot: str
 
-class BaseTelegram(pydantic.BaseModel):
-    telegram_bot: str
-
-    @pydantic.field_validator("telegram_bot")
-    def check_telegram_bot(cls, v):
-        if v != config.settings.TELEGRAM_BOT:
-            raise ValueError("Is not me")
-        return v
+#     @pydantic.field_validator("telegram_bot")
+#     def check_telegram_bot(cls, v):
+#         if v != config.settings.TELEGRAM_BOT:
+#             raise ValueError("Is not me")
+#         return v
 
 
 class BasePage(pydantic.BaseModel):

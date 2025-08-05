@@ -193,6 +193,7 @@ class FinanceAccount(Base):
 
 class PaymentStatus(enum.Enum):
     pending = "pending"
+    moderation = "moderation"
     completed = "completed"
     failed = "failed"
 
@@ -266,4 +267,19 @@ class Payment(Base):
         sqlalchemy.orm.relationship(
             back_populates="payments",
         )
+    )
+
+
+class Moderator(Base):
+    __tablename__ = "moderators"
+
+    id: sqlalchemy.orm.Mapped[intpk]
+
+    created_at: sqlalchemy.orm.Mapped[created_at]
+    updated_at: sqlalchemy.orm.Mapped[updated_at]
+
+    # user
+    user_id: sqlalchemy.orm.Mapped[int] = sqlalchemy.orm.mapped_column(
+        sqlalchemy.ForeignKey("telegram_users.id"),
+        unique=True,
     )

@@ -14,9 +14,9 @@ class ReferralCallback(
 ):
     action: str
     user_id: int
+    message_id: int
     referral_user_id: int
     page: int
-    message_id: int
 
 
 class ConfigCallback(
@@ -30,9 +30,31 @@ class ConfigCallback(
     page: int
 
 
+class CellCallback(
+    aiogram.filters.callback_data.CallbackData,
+    prefix="call",
+):
+    action: str
+    user_id: int
+    message_id: int
+    page: int
+    external_id: int
+    second_prefix: str
+
+
 class DepositCallback(
     aiogram.filters.callback_data.CallbackData,
     prefix="dep",
 ):
     user_id: int
     deposit_method: str
+
+
+class DepositAcceptCallback(
+    aiogram.filters.callback_data.CallbackData,
+    prefix="dep_a",
+):
+    user_id: int
+    message_id: int
+    payment_id: int
+    action: str

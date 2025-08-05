@@ -70,26 +70,14 @@ async def handle_profile_command(message: aiogram.types.Message):
     )
 
 
-async def load_page_handler(
-    message: aiogram.types.Message,
-    queue: str,
-):
-    sent_message = await message.answer("Загружаю...")
-    await logic.list_menu.publish_list_menu(
-        queue=queue,
-        user_id=message.from_user.id,
-        message_id=sent_message.message_id,
-    )
-
-
 @router.message(aiogram.filters.Command("ref"))
 async def ref_command_handler(message: aiogram.types.Message):
-    await load_page_handler(message, "ref_command")
+    await logic.list_menu.load_page_handler(message, "ref_command")
 
 
 @router.message(aiogram.filters.Command("conf"))
 async def conf_command_handler(message: aiogram.types.Message):
-    await load_page_handler(message, "conf_command")
+    await logic.list_menu.load_page_handler(message, "conf_command")
 
 
 @router.callback_query(callback.PageCallback.filter())
