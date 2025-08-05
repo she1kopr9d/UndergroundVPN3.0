@@ -1,18 +1,15 @@
 import uuid
-import httpx
 
 import config
-
+import database.io.base
+import database.io.config
+import database.io.server
+import database.io.telegram_user
+import database.models
+import httpx
 import schemas.config
 import schemas.servers
 import schemas.telegram
-
-import database.io.base
-import database.io.server
-import database.io.config
-import database.io.telegram_user
-
-import database.models
 
 
 def get_user_email(user_name: str) -> str:

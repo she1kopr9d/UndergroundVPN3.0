@@ -99,7 +99,7 @@ def REF_COMMAND(
     referrer_username: str,
 ) -> str:
     referrer_username = (
-        referrer_username if referrer_username != None else "Отсутствует"
+        referrer_username if referrer_username is not None else "Отсутствует"
     )
     return f"""
 *Информация о рефералах*

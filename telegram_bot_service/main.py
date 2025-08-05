@@ -1,21 +1,18 @@
-import sys
 import asyncio
 import logging
+import sys
 
 import aiogram
 import aiogram.fsm.storage.memory
-
 import deps
-import rabbit
-
 import handlers.admin
 import handlers.deposit
-import handlers.user
 import handlers.moderator
-
-import subscribers.user  # noqa
+import handlers.user
+import rabbit
 import subscribers.admin  # noqa
 import subscribers.moderator  # noqa
+import subscribers.user  # noqa
 
 dp = aiogram.Dispatcher(storage=aiogram.fsm.storage.memory.MemoryStorage())
 logging.basicConfig(level=logging.INFO)

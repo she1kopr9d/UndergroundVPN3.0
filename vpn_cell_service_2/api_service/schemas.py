@@ -1,6 +1,5 @@
-import pydantic
-
 import config
+import pydantic
 
 
 class ConfigEditInfo(pydantic.BaseModel):

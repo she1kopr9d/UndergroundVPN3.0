@@ -1,18 +1,15 @@
-import faststream.rabbit.fastapi
-
 import config
-
-import database.models
-import database.io.telegram_user
-import database.io.payments
-import database.io.finance_account
+import os
 import database.io.base
-
+import database.io.finance_account
+import database.io.payments
+import database.io.telegram_user
+import database.io.receipt
+import database.models
+import faststream.rabbit.fastapi
+import logic.payment_system
 import schemas.deposit
 import schemas.telegram
-
-import logic.payment_system
-
 
 router = faststream.rabbit.fastapi.RabbitRouter(config.rabbitmq.rabbitmq_url)
 
@@ -94,4 +91,22 @@ async def cansel_deposit_handle(
     await database.io.payments.update_payment_status(
         data.payment_id,
         database.models.PaymentStatus.failed,
+    )
+
+
+@router.subscriber("save_payment_receipt")
+async def save_payment_receipt(
+    data: schemas.deposit.DepositReceiptUploadData,
+):
+    file_bytes = data.filebytes.encode("latin1")
+    folder_path = f"uploads/receipts/{data.payment_id}"
+    os.makedirs(folder_path, exist_ok=True)
+    full_path = os.path.join(folder_path, data.filename)
+
+    with open(full_path, "wb") as f:
+        f.write(file_bytes)
+    await database.io.receipt.add_payment_receipt(
+        data.payment_id,
+        data.filename,
+        full_path,
     )

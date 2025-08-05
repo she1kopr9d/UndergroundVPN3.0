@@ -1,10 +1,12 @@
+import io
 import aiogram
-
 import deps
-import rabbit
 import keyboards
-import schemas.payments
+import rabbit
+import content.moderation
 import schemas.base
+import schemas.payments
+import schemas.moderator
 import schemas.user
 
 
@@ -34,3 +36,37 @@ async def new_moderation_payment_alert_handler(
         chat_id=data.user_id,
         text="Новый запрос на модерации, чтобы увидеть, нажмите /pay_list",
     )
+
+
+@rabbit.broker.subscriber("pay_cell_moder_data_answer")
+async def pay_cell_moder_data_handler(
+    data: schemas.moderator.PaymentModerCellData,
+):
+    bot: aiogram.Bot = await deps.get_bot()
+
+    if data.payment.receipt:
+        await bot.delete_message(
+            chat_id=data.user_id,
+            message_id=data.message_id,
+        )
+        file_bytes = data.payment.receipt.filebytes.encode('latin1')
+
+        file_like = io.BytesIO(file_bytes)
+        file_like.name = data.payment.receipt.filename
+        photo = aiogram.types.BufferedInputFile(
+            file=file_like.getvalue(),
+            filename=data.payment.receipt.filename,
+        )
+        send_message = await bot.send_photo(
+            chat_id=data.user_id,
+            photo=photo,
+            caption=content.moderation.MODERATION_PAYMENT(data),
+            reply_markup=None,
+        )
+        await bot.edit_message_reply_markup(
+            chat_id=data.user_id,
+            message_id=send_message.message_id,
+            reply_markup=keyboards.build_moderator_accept_keyboard(
+                data, send_message.message_id,
+            )
+        )

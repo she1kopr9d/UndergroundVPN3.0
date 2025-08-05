@@ -1,15 +1,13 @@
+import config
+import database.io.server
 import fastapi
 import faststream.rabbit.fastapi
-
-import config
+import logic.config_query
+import logic.server_query
+import logic.server_session
 import schemas.config
 import schemas.servers
 import schemas.telegram
-import logic.server_session
-import logic.server_query
-import logic.config_query
-import database.io.server
-
 
 router = faststream.rabbit.fastapi.RabbitRouter(config.rabbitmq.rabbitmq_url)
 

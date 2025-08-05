@@ -1,8 +1,7 @@
+import config
+import httpx
 from aiogram.filters import BaseFilter
 from aiogram.types import Message
-import httpx
-
-import config
 
 
 class IsAdminFilter(BaseFilter):

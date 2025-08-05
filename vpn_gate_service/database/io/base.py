@@ -1,8 +1,7 @@
-import sqlalchemy
-import sqlalchemy.orm
-
 import database.core
 import database.models
+import sqlalchemy
+import sqlalchemy.orm
 
 
 async def get_object_by_id(
@@ -31,3 +30,15 @@ async def delete_object_by_id(
             return True
 
         return False
+
+
+async def get_object_by_field(
+    field,
+    value,
+    object_class: type[database.models.Base],
+) -> database.models.Base | None:
+    async with database.core.async_session_factory() as session:
+        stmt = sqlalchemy.select(object_class).where(value == field)
+        result = await session.execute(stmt)
+        obj = result.scalar_one_or_none()
+        return obj

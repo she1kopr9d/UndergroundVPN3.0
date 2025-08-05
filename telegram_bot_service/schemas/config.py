@@ -1,6 +1,6 @@
 import typing
-import pydantic
 
+import pydantic
 import schemas.base
 
 

@@ -1,23 +1,27 @@
-import pydantic
 import typing
 
-import schemas.base
+import pydantic
 
 
-class StartDataANSW(pydantic.BaseModel):
+class UserIdANSW(pydantic.BaseModel):
     user_id: int
+
+
+class UserViewData(UserIdANSW):
+    username: str
+
+
+class StartDataANSW(UserIdANSW):
     status: str
     is_referral: bool
     referrer_username: str | None
 
 
-class ConfigDataANSW(pydantic.BaseModel):
-    user_id: int
+class ConfigDataANSW(UserIdANSW):
     config_url: str
 
 
-class StatusDataANSW(pydantic.BaseModel):
-    user_id: int
+class StatusDataANSW(UserIdANSW):
     status: str
 
 
@@ -26,25 +30,17 @@ class NewReferralData(pydantic.BaseModel):
     referral_username: str | None
 
 
-class ProfileData(pydantic.BaseModel):
-    user_id: int
-    username: str
+class ProfileData(UserViewData):
     referral_percentege: int
     balance: float
 
 
-class Referral(pydantic.BaseModel):
-    user_id: int
-    username: str
+class Referral(UserViewData):
+    pass
 
 
-class ReferralCommandData(schemas.base.BasePage):
-    user_id: int
+class ReferralCommandData(UserIdANSW):
     referrals: typing.List[Referral] | None
     referral_percentage: int
     referrer_username: str | None
     message_id: int
-
-
-class UserIdANSW(pydantic.BaseModel):
-    user_id: int

@@ -1,15 +1,12 @@
-import httpx
-
 import aiogram
-import aiogram.types
 import aiogram.filters.command
-
+import aiogram.types
 import config
+import content.admin
 import filters.is_admin
 import formater
+import httpx
 import rabbit
-import content.admin
-
 
 router = aiogram.Router()
 router.message.filter(filters.is_admin.IsAdminFilter())

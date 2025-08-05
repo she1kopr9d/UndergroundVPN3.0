@@ -1,8 +1,7 @@
-import sqlalchemy
-
-import schemas.telegram
 import database.core
 import database.models
+import schemas.telegram
+import sqlalchemy
 
 
 async def get_referrals_with_pagination(

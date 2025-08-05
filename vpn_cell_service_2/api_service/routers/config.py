@@ -1,8 +1,6 @@
 import fastapi
-
 import schemas
 import xray
-
 
 router = fastapi.APIRouter()
 

@@ -1,5 +1,4 @@
 import aiogram.types
-
 import rabbit
 
 

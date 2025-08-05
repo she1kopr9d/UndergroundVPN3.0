@@ -1,11 +1,11 @@
 import aiogram.types
-
 import callback
 import schemas.base
 import schemas.config
-import schemas.user
-import schemas.payments
 import schemas.deposite
+import schemas.payments
+import schemas.user
+import schemas.moderator
 
 
 def get_paggination_row(
@@ -222,7 +222,7 @@ def build_deposit_keyboard(
 
 def build_payment_accept_keyboard(
     data: schemas.deposite.DepositeCreateANSW,
-):
+) -> aiogram.types.InlineKeyboardMarkup:
     inline_keyboard = [
         [
             aiogram.types.InlineKeyboardButton(
@@ -243,6 +243,37 @@ def build_payment_accept_keyboard(
                     user_id=data.user_id,
                     message_id=data.message_id,
                     payment_id=data.payment_id,
+                ).pack(),
+            )
+        ],
+    ]
+    return aiogram.types.InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
+
+
+def build_moderator_accept_keyboard(
+    data: schemas.moderator.PaymentModerCellData,
+    new_message_id: int,
+) -> aiogram.types.InlineKeyboardMarkup:
+    inline_keyboard = [
+        [
+            aiogram.types.InlineKeyboardButton(
+                text="Подтвердить платеж",
+                callback_data=callback.DepositAcceptCallback(
+                    action="accept_1_moder",
+                    user_id=data.user_id,
+                    message_id=new_message_id,
+                    payment_id=data.payment.payment_id,
+                ).pack(),
+            )
+        ],
+        [
+            aiogram.types.InlineKeyboardButton(
+                text="Отказать",
+                callback_data=callback.DepositAcceptCallback(
+                    action="cancel_1_moder",
+                    user_id=data.user_id,
+                    message_id=new_message_id,
+                    payment_id=data.payment.payment_id,
                 ).pack(),
             )
         ],

@@ -1,14 +1,13 @@
-import json
-import fastapi
 import asyncio
+import json
 import typing
-import faststream.rabbit.fastapi
 
 import config
-import schemas.servers
 import database.io.server
+import fastapi
+import faststream.rabbit.fastapi
 import logic.server_session
-
+import schemas.servers
 
 router = faststream.rabbit.fastapi.RabbitRouter(config.rabbitmq.rabbitmq_url)
 

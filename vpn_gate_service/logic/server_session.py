@@ -1,9 +1,8 @@
-import time
 import asyncio
-from typing import Dict, Tuple, List
+import time
+from typing import Dict, List, Tuple
 
 import schemas.servers
-
 
 CLEANUP_INTERVAL = 30
 SERVER_TIMEOUT = 60

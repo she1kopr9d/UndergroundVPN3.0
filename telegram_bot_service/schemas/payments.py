@@ -1,6 +1,6 @@
 import typing
-import pydantic
 
+import pydantic
 import schemas.base
 
 
@@ -16,18 +16,15 @@ class PaymentPageANSW(
     payments: typing.List[PaymentInfo] | None
 
 
-class PaymentIdANSW(
-    schemas.base.DefaultTelegramANSW
-):
+class PaymentIdANSW(schemas.base.DefaultTelegramANSW):
     payment_id: int
 
 
-# class ConfigInfoANSW(pydantic.BaseModel):
-#     user_id: int
-#     message_id: int
-#     config_id: int
-#     config_name: str
-#     config_url: str
-#     server_id: int
-#     server_name: str
-#     now_page: int
+class ReceiptData(pydantic.BaseModel):
+    filename: str
+    filebytes: str
+
+
+class PaymentData(PaymentInfo):
+    amount: float
+    receipt: ReceiptData | None

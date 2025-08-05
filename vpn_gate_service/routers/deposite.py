@@ -1,10 +1,10 @@
-import faststream.rabbit.fastapi
-
 import config
-import schemas.telegram
-import database.models
+import database.io.base
 import database.io.telegram_user
-
+import database.models
+import faststream.rabbit.fastapi
+import schemas.telegram
+import schemas.deposit
 
 router = faststream.rabbit.fastapi.RabbitRouter(config.rabbitmq.rabbitmq_url)
 
@@ -46,4 +46,24 @@ async def deposite_list_router(
     return {
         "status": "ok",
         "payment_methods": dep_method,
+    }
+
+
+@router.post("/payment/method")
+async def payment_method(
+    data: schemas.deposit.DepositeId,
+):
+    payment_obj: database.models.Payment = (
+        await database.io.base.get_object_by_id(
+            id=data.payment_id,
+            object_class=database.models.Payment,
+        )
+    )
+    if payment_obj is None:
+        return {
+            "status": "object is none"
+        }
+    return {
+        "status": "ok",
+        "method": payment_obj.payment_method.value,
     }

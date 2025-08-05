@@ -1,6 +1,5 @@
 import pydantic
 
-
 # class BaseTelegram(pydantic.BaseModel):
 #     telegram_bot: str
 

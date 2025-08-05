@@ -1,9 +1,7 @@
-import sqlalchemy
-
 import database.core
 import database.models
-
 import schemas.telegram
+import sqlalchemy
 
 
 async def create_payment(

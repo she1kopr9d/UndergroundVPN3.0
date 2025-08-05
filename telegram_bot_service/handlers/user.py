@@ -1,13 +1,11 @@
 import aiogram
 import aiogram.filters
-
-import rabbit
-import content.user
-import content.config
 import callback
+import content.config
+import content.user
 import keyboards
 import logic.list_menu
-
+import rabbit
 
 router = aiogram.Router()
 

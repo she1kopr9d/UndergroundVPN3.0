@@ -1,10 +1,10 @@
-import sqlalchemy
-import sqlalchemy.orm
 import typing
 
 import database.core
 import database.models
 import schemas.servers
+import sqlalchemy
+import sqlalchemy.orm
 
 
 def server_exists(server: schemas.servers.ServerAuth) -> bool:

@@ -1,9 +1,7 @@
+import config
 import sqlalchemy
 import sqlalchemy.ext.asyncio
 import sqlalchemy.orm
-
-import config
-
 
 sync_engine = sqlalchemy.create_engine(
     url=config.database.DATABASE_URL_psycopg,

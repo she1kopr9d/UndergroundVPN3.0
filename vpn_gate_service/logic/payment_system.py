@@ -1,6 +1,5 @@
-import database.models
-
 import config
+import database.models
 
 
 def get_amount(

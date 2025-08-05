@@ -1,9 +1,8 @@
+import settings.database
+import settings.payment
 import settings.rabbitmq
 import settings.server
-import settings.database
 import settings.xray
-import settings.payment
-
 
 server = settings.server.Settings()
 database = settings.database.Settings()

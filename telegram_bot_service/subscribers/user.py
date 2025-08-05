@@ -1,15 +1,15 @@
 import content.config
-import content.user
 import content.deposite
+import content.user
 import deps
 import keyboards
+import logic.list_menu
 import rabbit
 import schemas.base
 import schemas.config
-import schemas.user
 import schemas.deposite
 import schemas.payments
-import logic.list_menu
+import schemas.user
 
 
 @rabbit.broker.subscriber("start_command_answer")
@@ -185,17 +185,19 @@ async def accept_deposit_handler(
     data: schemas.payments.PaymentIdANSW,
 ):
     bot = await deps.get_bot()
-
-    await bot.edit_message_reply_markup(
-        chat_id=data.user_id,
-        message_id=data.message_id,
-        reply_markup=None,
-    )
+    try:
+        await bot.edit_message_reply_markup(
+            chat_id=data.user_id,
+            message_id=data.message_id,
+            reply_markup=None,
+        )
+    except Exception as error:
+        print(f"{error}")
     await bot.send_message(
         chat_id=data.user_id,
         text=(
             "Ваш платеж в обработке, модерация проверит "
             "его, после мы вам пополним баланс \n\n"
             "Обычно это занимает не более 15 минут"
-        )
+        ),
     )

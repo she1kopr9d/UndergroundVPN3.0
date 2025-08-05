@@ -1,15 +1,15 @@
 import aiogram
-import aiogram.types
+import uuid
 import aiogram.filters
 import aiogram.fsm.context
-
+import aiogram.types
+import callback
 import config
-import rabbit
 import keyboards
 import logic.payments
-import callback
+import rabbit
 import states
-
+import utils.types
 
 router: aiogram.Router = aiogram.Router()
 
@@ -100,15 +100,62 @@ async def check_valid_amount_handler(
 async def accept_deposit_handler(
     query: aiogram.types.CallbackQuery,
     callback_data: callback.DepositAcceptCallback,
+    state: aiogram.fsm.context.FSMContext,
 ):
+    method = await logic.payments.get_payment_method(
+        payment_id=callback_data.payment_id,
+    )
+    if method in ["handle", "system"]:
+        await state.set_state(states.DepositeReceiptForm.file)
+        await state.update_data(
+            user_id=callback_data.user_id,
+            message_id=callback_data.message_id,
+            payment_id=callback_data.payment_id,
+        )
+        await query.message.bot.edit_message_reply_markup(
+            chat_id=callback_data.user_id,
+            message_id=callback_data.message_id,
+            reply_markup=None,
+        )
+        await query.message.answer(
+            text=(
+                "Пожалуйста скиньте скрин платежа, "
+                "так модератор сможет проверить\n\n"
+                "Нужна именно фотография/скрин НЕ ФАЙЛ!!!"
+            )
+        )
+    else:
+        await logic.payments.accept_deposit(callback_data)
+
+
+@router.message(
+    states.DepositeReceiptForm.file,
+    aiogram.F.photo
+)
+async def handle_receipt_photo(
+    message: aiogram.types.Message,
+    state: aiogram.fsm.context.FSMContext,
+    bot: aiogram.Bot,
+):
+    data = await state.get_data()
+    photo: aiogram.types.PhotoSize = message.photo[-1]
+    telegram_file = await bot.get_file(photo.file_id)
+    file_stream = await bot.download_file(telegram_file.file_path)
+    file_bytes = file_stream.read()
+    filename = f"{uuid.uuid4()}.jpg"
     await rabbit.broker.publish(
         {
-            "user_id": callback_data.user_id,
-            "message_id": callback_data.message_id,
-            "payment_id": callback_data.payment_id,
+            "user_id": data["user_id"],
+            "message_id": data["message_id"],
+            "payment_id": data["payment_id"],
+            "filename": filename,
+            "filebytes": file_bytes.decode("latin1"),
         },
-        queue="accept_deposit",
+        queue="save_payment_receipt",
     )
+    await message.answer("✅ Чек получен и передан на проверку.")
+    await state.clear()
+    await logic.payments.accept_deposit(utils.types.DotDict(**data))
 
 
 @router.callback_query(
@@ -129,3 +176,46 @@ async def cancel_deposit_handler(
         queue="cancel_deposit",
     )
     await query.message.delete()
+
+
+async def send_file_to_queue(
+    user_id: int,
+    message_id: int,
+    payment_id: int,
+    file_id: str,
+    file_name: str,
+    file_bytes: bytes,
+):
+    await rabbit.broker.publish(
+        {
+            "file_id": file_id,
+            "file_name": file_name,
+            "file_bytes": file_bytes.decode("latin1"),
+        },
+        queue="upload_test_file",
+    )
+
+
+@router.message(aiogram.filters.Command("test_file"))
+async def handle_document(
+    message: aiogram.types.Message,
+    bot: aiogram.Bot,
+):
+    if not message.document:
+        await message.reply("Пожалуйста, пришли файл.")
+        return
+
+    file = await bot.get_file(message.document.file_id)
+    file_path = file.file_path
+    file_name = message.document.file_name
+
+    file_bytes = await bot.download_file(file_path)
+    content = await file_bytes.read()
+
+    await send_file_to_queue(
+        file_id=message.document.file_id,
+        file_name=file_name,
+        file_bytes=content,
+    )
+
+    await message.answer("Файл отправлен на сервер!")

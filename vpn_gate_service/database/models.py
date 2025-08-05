@@ -1,10 +1,9 @@
+import datetime
 import enum
 import typing
-import datetime
 
 import sqlalchemy
 import sqlalchemy.orm
-
 
 intpk = typing.Annotated[int, sqlalchemy.orm.mapped_column(primary_key=True)]
 created_at = typing.Annotated[
@@ -282,4 +281,23 @@ class Moderator(Base):
     user_id: sqlalchemy.orm.Mapped[int] = sqlalchemy.orm.mapped_column(
         sqlalchemy.ForeignKey("telegram_users.id"),
         unique=True,
+    )
+
+
+class PaymentReceipt(Base):
+    __tablename__ = "payment_receipts"
+
+    id: sqlalchemy.orm.Mapped[intpk]
+    file_path: sqlalchemy.orm.Mapped[str] = sqlalchemy.orm.mapped_column(
+        sqlalchemy.String, nullable=False
+    )
+    filename: sqlalchemy.orm.Mapped[str] = sqlalchemy.orm.mapped_column(
+        sqlalchemy.String, nullable=False
+    )
+
+    created_at: sqlalchemy.orm.Mapped[created_at]
+    updated_at: sqlalchemy.orm.Mapped[updated_at]
+
+    payment_id: sqlalchemy.orm.Mapped[int] = sqlalchemy.orm.mapped_column(
+        sqlalchemy.ForeignKey("payments.id"), nullable=False
     )

@@ -1,10 +1,8 @@
+import config
+import database.io.telegram_user
 import fastapi
 import faststream.rabbit.fastapi
-
-import config
 import schemas.dev
-import database.io.telegram_user
-
 
 router = faststream.rabbit.fastapi.RabbitRouter(
     url=config.rabbitmq.rabbitmq_url,

@@ -1,6 +1,6 @@
-import logic.keygen
-import database.models
 import database.io.server
+import database.models
+import logic.keygen
 
 
 def get_template_config(private) -> str:

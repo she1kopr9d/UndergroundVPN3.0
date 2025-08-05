@@ -1,5 +1,5 @@
-import rabbit
 import deps
+import rabbit
 import schemas.admin
 import schemas.user
 

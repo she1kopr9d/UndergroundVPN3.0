@@ -1,14 +1,12 @@
 import fastapi
-
-import routers.dev
-import routers.user
-import routers.servers
 import routers.deposite
-import routers.rabbit.user
-import routers.rabbit.server
+import routers.dev
 import routers.rabbit.deposite
 import routers.rabbit.moderator
-
+import routers.rabbit.server
+import routers.rabbit.user
+import routers.servers
+import routers.user
 
 app = fastapi.FastAPI()
 app.include_router(routers.dev.router)

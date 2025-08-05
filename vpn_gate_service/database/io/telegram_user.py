@@ -1,11 +1,9 @@
-import sqlalchemy
-import sqlalchemy.orm
-
 import database.core
 import database.models
-
 import schemas.dev
 import schemas.telegram
+import sqlalchemy
+import sqlalchemy.orm
 
 
 async def create_telegram_user(

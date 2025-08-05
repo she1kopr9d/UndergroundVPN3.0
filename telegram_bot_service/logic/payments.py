@@ -1,6 +1,5 @@
-import httpx
-
 import config
+import httpx
 import rabbit
 
 
@@ -50,4 +49,36 @@ async def create_payment(
             "method": method,
         },
         queue="create_payment",
+    )
+
+
+async def get_payment_method(
+    payment_id: int,
+) -> str:
+    try:
+        async with httpx.AsyncClient() as client:
+            response: httpx.Response = (
+                await client.post(
+                    url=f"{config.settings.GATE_URL}/payment/method",
+                    json={
+                        "payment_id": payment_id,
+                    },
+                )
+            )
+            data = response.json()
+            if data["status"] != "ok":
+                return None
+            return data["method"]
+    except httpx.HTTPError as e:
+        print(f"Get payment method failed: {e}")
+
+
+async def accept_deposit(data):
+    await rabbit.broker.publish(
+        {
+            "user_id": data.user_id,
+            "message_id": data.message_id,
+            "payment_id": data.payment_id,
+        },
+        queue="accept_deposit",
     )

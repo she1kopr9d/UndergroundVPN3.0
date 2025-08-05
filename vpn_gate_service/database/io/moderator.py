@@ -1,8 +1,7 @@
-import sqlalchemy
-import sqlalchemy.orm
-
 import database.core
 import database.models
+import sqlalchemy
+import sqlalchemy.orm
 
 
 async def is_moderator(
@@ -19,13 +18,12 @@ async def is_moderator(
 
 async def get_moderator_telegram_id_list() -> list[int]:
     async with database.core.async_session_factory() as session:
-        stmt = (
-            sqlalchemy.select(database.models.TelegramUser.telegram_id)
-            .join(
-                database.models.Moderator,
-                database.models.Moderator.user_id
-                == database.models.TelegramUser.id
-            )
+        stmt = sqlalchemy.select(
+            database.models.TelegramUser.telegram_id
+        ).join(
+            database.models.Moderator,
+            database.models.Moderator.user_id
+            == database.models.TelegramUser.id,
         )
         result = await session.execute(stmt)
         telegram_ids = result.scalars().all()
