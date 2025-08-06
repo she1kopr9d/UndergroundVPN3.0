@@ -1,11 +1,13 @@
-import aiogram
 import uuid
+
+import aiogram
 import aiogram.filters
 import aiogram.fsm.context
 import aiogram.types
 import callback
 import config
 import keyboards
+import logic.menu
 import logic.payments
 import rabbit
 import states
@@ -30,15 +32,13 @@ async def handle_command(message: aiogram.types.Message):
 
 @router.message(aiogram.filters.Command("deposit"))
 async def deposit_command(message: aiogram.types.Message):
-    deposit_data = await logic.payments.get_payment_methods(
-        message.from_user.id,
+    send_message = await message.answer(
+        text="Загружаю...",
     )
-    await message.answer(
-        text="Выберите метод оплаты",
-        reply_markup=keyboards.build_deposit_keyboard(
-            user_id=message.from_user.id,
-            payment_methods=deposit_data["payment_methods"],
-        ),
+    await logic.menu.deposit_menu(
+        user_id=message.from_user.id,
+        message_id=send_message.message_id,
+        bot=message.bot,
     )
 
 
@@ -50,7 +50,11 @@ async def deposit_amount_query(
 ):
     send_message = await query.message.edit_text(
         text="Введите число пополнения в РУБЛЯХ!",
-        reply_markup=None,
+        reply_markup=keyboards.build_back_to_menu_keyboard(
+            callback_data.user_id,
+            query.message.message_id,
+            "dep",
+        ),
     )
     await state.set_state(states.DepositForm.amount)
     await state.update_data(
@@ -128,10 +132,7 @@ async def accept_deposit_handler(
         await logic.payments.accept_deposit(callback_data)
 
 
-@router.message(
-    states.DepositeReceiptForm.file,
-    aiogram.F.photo
-)
+@router.message(states.DepositeReceiptForm.file, aiogram.F.photo)
 async def handle_receipt_photo(
     message: aiogram.types.Message,
     state: aiogram.fsm.context.FSMContext,

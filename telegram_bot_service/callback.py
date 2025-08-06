@@ -58,3 +58,12 @@ class DepositAcceptCallback(
     message_id: int
     payment_id: int
     action: str
+
+
+class MainMenuCallBack(
+    aiogram.filters.callback_data.CallbackData,
+    prefix="m_menu",
+):
+    user_id: int
+    message_id: int
+    action: str

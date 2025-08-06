@@ -3,9 +3,45 @@ import callback
 import schemas.base
 import schemas.config
 import schemas.deposite
+import schemas.moderator
 import schemas.payments
 import schemas.user
-import schemas.moderator
+
+
+def build_main_menu_button(
+    text: str,
+    action: str,
+    user_id: int,
+    message_id: int,
+) -> aiogram.types.InlineKeyboardButton:
+    return aiogram.types.InlineKeyboardButton(
+        text=text,
+        callback_data=callback.MainMenuCallBack(
+            action=action,
+            user_id=user_id,
+            message_id=message_id,
+        ).pack(),
+    )
+
+
+def build_back_to_main_menu_button(
+    user_id: int,
+    message_id: int,
+) -> aiogram.types.InlineKeyboardButton:
+    return build_main_menu_button(
+        text="В меню",
+        action="main",
+        user_id=user_id,
+        message_id=message_id,
+    )
+
+
+def build_back_to_main_menu_keyboard(
+    user_id: int,
+    message_id: int,
+) -> aiogram.types.InlineKeyboardMarkup:
+    inline_keyboard = [[build_back_to_main_menu_button(user_id, message_id)]]
+    return aiogram.types.InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
 
 
 def get_paggination_row(
@@ -46,18 +82,19 @@ def build_referrals_keyboard(
     data: schemas.user.ReferralCommandData,
 ) -> aiogram.types.InlineKeyboardMarkup:
     inline_keyboard = []
-    for ref in data.referrals:
-        button = aiogram.types.InlineKeyboardButton(
-            text=f"👤 {ref.username}",
-            callback_data=callback.ReferralCallback(
-                action="open",
-                referral_user_id=ref.user_id,
-                user_id=data.user_id,
-                page=data.now_page,
-                message_id=data.message_id,
-            ).pack(),
-        )
-        inline_keyboard.append([button])
+    if data.referrals is not None:
+        for ref in data.referrals:
+            button = aiogram.types.InlineKeyboardButton(
+                text=f"👤 {ref.username}",
+                callback_data=callback.ReferralCallback(
+                    action="open",
+                    referral_user_id=ref.user_id,
+                    user_id=data.user_id,
+                    page=data.now_page,
+                    message_id=data.message_id,
+                ).pack(),
+            )
+            inline_keyboard.append([button])
     paggination_row = get_paggination_row(
         data,
         data.user_id,
@@ -66,6 +103,14 @@ def build_referrals_keyboard(
     )
     if paggination_row:
         inline_keyboard.append(paggination_row)
+    inline_keyboard.append(
+        [
+            build_back_to_main_menu_button(
+                user_id=data.user_id,
+                message_id=data.message_id,
+            )
+        ]
+    )
     return aiogram.types.InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
 
 
@@ -73,18 +118,19 @@ def build_configs_keyboard(
     data: schemas.config.ConfigPageANSW,
 ) -> aiogram.types.InlineKeyboardMarkup:
     inline_keyboard = []
-    for conf in data.configs:
-        button = aiogram.types.InlineKeyboardButton(
-            text=f"📄 {conf.config_name}",
-            callback_data=callback.ConfigCallback(
-                action="open",
-                config_id=conf.config_id,
-                user_id=data.user_id,
-                page=data.now_page,
-                message_id=data.message_id,
-            ).pack(),
-        )
-        inline_keyboard.append([button])
+    if data.configs is not None:
+        for conf in data.configs:
+            button = aiogram.types.InlineKeyboardButton(
+                text=f"📄 {conf.config_name}",
+                callback_data=callback.ConfigCallback(
+                    action="open",
+                    config_id=conf.config_id,
+                    user_id=data.user_id,
+                    page=data.now_page,
+                    message_id=data.message_id,
+                ).pack(),
+            )
+            inline_keyboard.append([button])
     paggination_row = get_paggination_row(
         data,
         data.user_id,
@@ -93,6 +139,14 @@ def build_configs_keyboard(
     )
     if paggination_row:
         inline_keyboard.append(paggination_row)
+    inline_keyboard.append(
+        [
+            build_back_to_main_menu_button(
+                user_id=data.user_id,
+                message_id=data.message_id,
+            )
+        ]
+    )
     return aiogram.types.InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
 
 
@@ -204,6 +258,7 @@ def build_deposit_button(
 
 def build_deposit_keyboard(
     user_id: int,
+    message_id: int,
     payment_methods: list,
 ) -> aiogram.types.InlineKeyboardMarkup:
     inline_keyboard = []
@@ -217,6 +272,14 @@ def build_deposit_keyboard(
                 )
             ]
         )
+    inline_keyboard.append(
+        [
+            build_back_to_main_menu_button(
+                user_id=user_id,
+                message_id=message_id,
+            )
+        ]
+    )
     return aiogram.types.InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
 
 
@@ -250,32 +313,127 @@ def build_payment_accept_keyboard(
     return aiogram.types.InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
 
 
+def build_moderator_accept_button(
+    text: str,
+    action: str,
+    data: schemas.moderator.PaymentModerCellData,
+    new_message_id: int,
+) -> aiogram.types.InlineKeyboardButton:
+    return aiogram.types.InlineKeyboardButton(
+        text=text,
+        callback_data=callback.DepositAcceptCallback(
+            action=action,
+            user_id=data.user_id,
+            message_id=new_message_id,
+            payment_id=data.payment.payment_id,
+        ).pack(),
+    )
+
+
+def build_moderator_accept_button_callback(
+    text: str,
+    action: str,
+    data: callback.DepositAcceptCallback,
+) -> aiogram.types.InlineKeyboardButton:
+    return aiogram.types.InlineKeyboardButton(
+        text=text,
+        callback_data=callback.DepositAcceptCallback(
+            action=action,
+            user_id=data.user_id,
+            message_id=data.message_id,
+            payment_id=data.payment_id,
+        ).pack(),
+    )
+
+
 def build_moderator_accept_keyboard(
     data: schemas.moderator.PaymentModerCellData,
     new_message_id: int,
 ) -> aiogram.types.InlineKeyboardMarkup:
     inline_keyboard = [
-        [
-            aiogram.types.InlineKeyboardButton(
-                text="Подтвердить платеж",
-                callback_data=callback.DepositAcceptCallback(
-                    action="accept_1_moder",
-                    user_id=data.user_id,
-                    message_id=new_message_id,
-                    payment_id=data.payment.payment_id,
-                ).pack(),
-            )
-        ],
-        [
-            aiogram.types.InlineKeyboardButton(
-                text="Отказать",
-                callback_data=callback.DepositAcceptCallback(
-                    action="cancel_1_moder",
-                    user_id=data.user_id,
-                    message_id=new_message_id,
-                    payment_id=data.payment.payment_id,
-                ).pack(),
-            )
-        ],
+        [build_moderator_accept_button(text, action, data, new_message_id)]
+        for text, action in [
+            ("Подтвердить платеж", "accept_1_moder"),
+            ("Отказать", "cancel_1_moder"),
+        ]
+    ]
+    return aiogram.types.InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
+
+
+def build_moderator_accept_2_keyboard(
+    data: callback.DepositAcceptCallback,
+) -> aiogram.types.InlineKeyboardMarkup:
+    inline_keyboard = [
+        [build_moderator_accept_button_callback(text, action, data)]
+        for text, action in [
+            ("Назад", "back_moder"),
+            ("Точно подтвердить", "accept_2_moder"),
+        ]
+    ]
+    return aiogram.types.InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
+
+
+def build_moderator_cancel_2_keyboard(
+    data: callback.DepositAcceptCallback,
+) -> aiogram.types.InlineKeyboardMarkup:
+    inline_keyboard = [
+        [build_moderator_accept_button_callback(text, action, data)]
+        for text, action in [
+            ("Точно отказать", "cancel_2_moder"),
+            ("Назад", "back_moder"),
+        ]
+    ]
+    return aiogram.types.InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
+
+
+def build_moderator_back_keyboard(
+    data: callback.DepositAcceptCallback,
+) -> aiogram.types.InlineKeyboardMarkup:
+    inline_keyboard = [
+        [build_moderator_accept_button_callback(text, action, data)]
+        for text, action in [
+            ("Подтвердить платеж", "accept_1_moder"),
+            ("Отказать", "cancel_1_moder"),
+        ]
+    ]
+    return aiogram.types.InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
+
+
+def build_main_menu_keyboard(
+    user_id: int,
+    message_id: int,
+) -> aiogram.types.InlineKeyboardMarkup:
+    inline_keyboard = [
+        [build_main_menu_button(text, action, user_id, message_id)]
+        for text, action in [
+            ("Профиль", "prof"),
+            ("Рефералы", "ref"),
+            ("Пополнить баланс", "dep"),
+            ("Конфиги", "conf"),
+        ]
+    ]
+    return aiogram.types.InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
+
+
+def build_back_to_menu_button(
+    user_id: int,
+    message_id: int,
+    action: str,
+) -> aiogram.types.InlineKeyboardButton:
+    return build_main_menu_button(
+        text="Назад",
+        action=action,
+        user_id=user_id,
+        message_id=message_id,
+    )
+
+
+def build_back_to_menu_keyboard(
+    user_id: int,
+    message_id: int,
+    action: str,
+) -> aiogram.types.InlineKeyboardMarkup:
+    inline_keyboard = [
+        [build_back_to_menu_button(user_id, message_id, action)]
     ]
     return aiogram.types.InlineKeyboardMarkup(inline_keyboard=inline_keyboard)

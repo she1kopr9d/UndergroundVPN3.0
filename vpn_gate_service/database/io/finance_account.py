@@ -45,3 +45,21 @@ async def get_referral_percentage(telegram_id: int) -> int:
             return 0
 
         return user.finance_account.referral_percent
+
+
+async def add_amount_on_balance(
+    finance_account_id: int,
+    amount: float,
+) -> database.models.FinanceAccount:
+    async with database.core.async_session_factory() as session:
+        stmt = (
+            sqlalchemy.update(database.models.FinanceAccount)
+            .where(database.models.FinanceAccount.id == finance_account_id)
+            .values(balance=database.models.FinanceAccount.balance + amount)
+            .returning(database.models.FinanceAccount)
+        )
+        result = await session.execute(stmt)
+        finance_account = result.scalar_one()
+        await session.commit()
+        await session.refresh(finance_account)
+        return finance_account

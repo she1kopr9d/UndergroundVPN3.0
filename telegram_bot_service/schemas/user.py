@@ -1,6 +1,7 @@
 import typing
 
 import pydantic
+import schemas.base
 
 
 class UserIdANSW(pydantic.BaseModel):
@@ -25,9 +26,18 @@ class StatusDataANSW(UserIdANSW):
     status: str
 
 
-class NewReferralData(pydantic.BaseModel):
+class ReferralData(pydantic.BaseModel):
     referrer_user_id: int
     referral_username: str | None
+
+
+class ReferralInfoData(pydantic.BaseModel):
+    referral_user_id: int
+    referral_username: str | None
+
+
+class NewReferralData(ReferralData):
+    pass
 
 
 class ProfileData(UserViewData):
@@ -39,8 +49,17 @@ class Referral(UserViewData):
     pass
 
 
-class ReferralCommandData(UserIdANSW):
+class ReferralCommandData(
+    schemas.base.DefaultTelegramANSW,
+    schemas.base.BasePage,
+):
     referrals: typing.List[Referral] | None
     referral_percentage: int
     referrer_username: str | None
-    message_id: int
+
+
+class ReferralDepositInfo(
+    ReferralInfoData,
+    UserIdANSW,
+):
+    amount: float

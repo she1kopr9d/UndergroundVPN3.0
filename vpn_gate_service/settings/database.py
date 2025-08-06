@@ -1,8 +1,8 @@
 import pydantic
-from pydantic_settings import BaseSettings, SettingsConfigDict
+import pydantic_settings
 
 
-class Settings(BaseSettings):
+class Settings(pydantic_settings.BaseSettings):
     DB_HOST: str
     DB_PORT: int
     DB_USER: str = pydantic.Field(alias="POSTGRES_USER")
@@ -23,4 +23,4 @@ class Settings(BaseSettings):
             f"@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
         )
 
-    model_config = SettingsConfigDict(env_file=".env")
+    model_config = pydantic_settings.SettingsConfigDict(env_file=".env")

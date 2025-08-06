@@ -57,13 +57,11 @@ async def get_payment_method(
 ) -> str:
     try:
         async with httpx.AsyncClient() as client:
-            response: httpx.Response = (
-                await client.post(
-                    url=f"{config.settings.GATE_URL}/payment/method",
-                    json={
-                        "payment_id": payment_id,
-                    },
-                )
+            response: httpx.Response = await client.post(
+                url=f"{config.settings.GATE_URL}/payment/method",
+                json={
+                    "payment_id": payment_id,
+                },
             )
             data = response.json()
             if data["status"] != "ok":

@@ -1,5 +1,5 @@
-import database.models
 import database.core
+import database.models
 
 
 async def add_payment_receipt(

@@ -57,7 +57,7 @@ async def handle_start(data: schemas.telegram.StartData):
 
 @router.subscriber("profile_command")
 async def profile_command_hadler(
-    data: schemas.telegram.ProfileData,
+    data: schemas.telegram.UserData,
 ):
     user_data: schemas.telegram.UserAllData = (
         await database.io.telegram_user.get_telegram_user_data(
@@ -72,7 +72,7 @@ async def profile_command_hadler(
     await router.broker.publish(
         {
             "user_id": data.user_id,
-            "username": data.username,
+            "username": user_data.username,
             "referral_percentege": finance_account.referral_percent,
             "balance": finance_account.balance,
         },

@@ -1,12 +1,14 @@
 import io
+
 import aiogram
+import content.moderation
 import deps
 import keyboards
+import logic.list_menu
 import rabbit
-import content.moderation
 import schemas.base
-import schemas.payments
 import schemas.moderator
+import schemas.payments
 import schemas.user
 
 
@@ -49,7 +51,7 @@ async def pay_cell_moder_data_handler(
             chat_id=data.user_id,
             message_id=data.message_id,
         )
-        file_bytes = data.payment.receipt.filebytes.encode('latin1')
+        file_bytes = data.payment.receipt.filebytes.encode("latin1")
 
         file_like = io.BytesIO(file_bytes)
         file_like.name = data.payment.receipt.filename
@@ -67,6 +69,58 @@ async def pay_cell_moder_data_handler(
             chat_id=data.user_id,
             message_id=send_message.message_id,
             reply_markup=keyboards.build_moderator_accept_keyboard(
-                data, send_message.message_id,
-            )
+                data,
+                send_message.message_id,
+            ),
         )
+    else:
+        await bot.edit_message_text(
+            chat_id=data.user_id,
+            message_id=data.message_id,
+            text=content.moderation.MODERATION_PAYMENT(data),
+            reply_markup=keyboards.build_moderator_accept_keyboard(
+                data,
+                data.message_id,
+            ),
+        )
+
+
+async def deposit_moder_answer_handler(
+    data: schemas.base.DefaultTelegramANSW,
+    caption: str,
+):
+    bot: aiogram.Bot = await deps.get_bot()
+
+    try:
+        await bot.edit_message_caption(
+            chat_id=data.user_id,
+            message_id=data.message_id,
+            caption=caption,
+            reply_markup=None,
+        )
+    except Exception:
+        await bot.edit_message_text(
+            chat_id=data.user_id,
+            message_id=data.message_id,
+            text=caption,
+            reply_markup=None,
+        )
+    await logic.list_menu.load_page_handler_bot(
+        bot=bot,
+        user_id=data.user_id,
+        queue="pay_list_command",
+    )
+
+
+@rabbit.broker.subscriber("cancel_deposit_moder_answer")
+async def cancel_deposit_moder_answer_handler(
+    data: schemas.base.DefaultTelegramANSW,
+):
+    await deposit_moder_answer_handler(data, "Отказ")
+
+
+@rabbit.broker.subscriber("accept_deposit_moder_answer")
+async def accept_deposit_moder_answer_handler(
+    data: schemas.base.DefaultTelegramANSW,
+):
+    await deposit_moder_answer_handler(data, "Подтвержденно")

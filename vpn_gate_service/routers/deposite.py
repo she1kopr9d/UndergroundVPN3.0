@@ -3,8 +3,8 @@ import database.io.base
 import database.io.telegram_user
 import database.models
 import faststream.rabbit.fastapi
-import schemas.telegram
 import schemas.deposit
+import schemas.telegram
 
 router = faststream.rabbit.fastapi.RabbitRouter(config.rabbitmq.rabbitmq_url)
 
@@ -60,9 +60,7 @@ async def payment_method(
         )
     )
     if payment_obj is None:
-        return {
-            "status": "object is none"
-        }
+        return {"status": "object is none"}
     return {
         "status": "ok",
         "method": payment_obj.payment_method.value,

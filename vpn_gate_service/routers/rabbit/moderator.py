@@ -1,13 +1,13 @@
 import config
+import database.io.base
 import database.io.moderator
 import database.io.payments
 import database.io.telegram_user
-import database.io.base
 import database.models
 import faststream.rabbit.fastapi
-import schemas.telegram
-import schemas.deposit
 import logic.receipt_convert
+import schemas.deposit
+import schemas.telegram
 
 router = faststream.rabbit.fastapi.RabbitRouter(config.rabbitmq.rabbitmq_url)
 
@@ -78,11 +78,8 @@ async def pay_cell_moder_data_handler(
     )
     payment_receipt_dict = None
     if payment_receipt_obj:
-        payment_receipt_dict = (
-            await logic.receipt_convert
-            .convert_payment_receipt_to_receipt_data(
-                receipt=payment_receipt_obj,
-            )
+        payment_receipt_dict = await logic.receipt_convert.convert_payment_receipt_to_receipt_data(
+            receipt=payment_receipt_obj,
         )
     await router.broker.publish(
         {
@@ -98,7 +95,7 @@ async def pay_cell_moder_data_handler(
                 "amount": payment_obj.amount,
                 "payment_method": payment_obj.payment_method.value,
                 "receipt": payment_receipt_dict,
-            }
+            },
         },
         queue="pay_cell_moder_data_answer",
     )

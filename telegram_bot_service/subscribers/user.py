@@ -1,9 +1,11 @@
+import aiogram.fsm.context
 import content.config
 import content.deposite
 import content.user
 import deps
 import keyboards
 import logic.list_menu
+import logic.menu
 import rabbit
 import schemas.base
 import schemas.config
@@ -63,14 +65,22 @@ async def profile_command_handler(
     data: schemas.user.ProfileData,
 ):
     bot = await deps.get_bot()
-
-    await bot.send_message(
-        chat_id=data.user_id,
-        text=content.user.PROFILE_COMMAND(
-            data,
-            bot_username=((await bot.get_me()).username),
-        ),
-        parse_mode="Markdown",
+    state: aiogram.fsm.context.FSMContext = await deps.get_state(data.user_id)
+    state_data = await state.get_data()
+    message_id = None
+    try:
+        message_id = state_data["message_id"]
+    except Exception:
+        send_message = await bot.send_message(
+            chat_id=data.user_id, text="Загружаю..."
+        )
+        message_id = send_message.message_id
+    finally:
+        await state.clear()
+    await logic.menu.profile_menu(
+        bot,
+        data,
+        message_id,
     )
 
 
@@ -79,24 +89,7 @@ async def ref_command_handler(
     data: schemas.user.ReferralCommandData,
 ):
     bot = await deps.get_bot()
-    kwargs = dict()
-    if data.referrals:
-        kwargs.update(
-            {
-                "reply_markup": keyboards.build_referrals_keyboard(data),
-            }
-        )
-
-    await bot.edit_message_text(
-        chat_id=data.user_id,
-        message_id=data.message_id,
-        text=content.user.REF_COMMAND(
-            referral_percentage=data.referral_percentage,
-            referrer_username=data.referrer_username,
-        ),
-        parse_mode="Markdown",
-        **kwargs,
-    )
+    await logic.menu.referral_menu(bot, data)
 
 
 @rabbit.broker.subscriber("conf_command_answer")
@@ -104,21 +97,7 @@ async def conf_command_handler(
     data: schemas.config.ConfigPageANSW,
 ):
     bot = await deps.get_bot()
-    kwargs = dict()
-    if data.configs:
-        kwargs.update(
-            {
-                "reply_markup": keyboards.build_configs_keyboard(data),
-            }
-        )
-
-    await bot.edit_message_text(
-        chat_id=data.user_id,
-        message_id=data.message_id,
-        text="*Ваши конфиги*",
-        parse_mode="Markdown",
-        **kwargs,
-    )
+    await logic.menu.config_menu(bot, data)
 
 
 @rabbit.broker.subscriber("conf_info_command_answer")
@@ -200,4 +179,48 @@ async def accept_deposit_handler(
             "его, после мы вам пополним баланс \n\n"
             "Обычно это занимает не более 15 минут"
         ),
+    )
+
+
+async def deposit_moder_to_client(
+    data: schemas.user.UserIdANSW,
+    text: str,
+):
+    bot = await deps.get_bot()
+
+    await bot.send_message(
+        chat_id=data.user_id,
+        text=text,
+    )
+
+
+@rabbit.broker.subscriber("cancel_deposit_moder_to_client")
+async def cancel_deposit_moder_to_client_handler(
+    data: schemas.user.UserIdANSW,
+):
+    await deposit_moder_to_client(
+        data=data,
+        text="Модерация не нашла платеж в системе",
+    )
+
+
+@rabbit.broker.subscriber("accept_deposit_moder_to_client")
+async def accept_deposit_moder_to_client_handler(
+    data: schemas.user.UserIdANSW,
+):
+    await deposit_moder_to_client(
+        data=data,
+        text="Модерация одобрила ваш платеж, в /profile пополнился баланс",
+    )
+
+
+@rabbit.broker.subscriber("now_referral_deposit")
+async def now_referral_deposit_handler(
+    data: schemas.user.ReferralDepositInfo,
+):
+    bot = await deps.get_bot()
+
+    await bot.send_message(
+        chat_id=data.user_id,
+        text=content.user.REFERRAL_DEPOSIT(data),
     )

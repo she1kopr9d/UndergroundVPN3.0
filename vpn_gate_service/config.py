@@ -4,8 +4,8 @@ import settings.rabbitmq
 import settings.server
 import settings.xray
 
-server = settings.server.Settings()
 database = settings.database.Settings()
-rabbitmq = settings.rabbitmq.Settings()
-xray = settings.xray.Settings()
 payment = settings.payment.Settings()
+rabbitmq = settings.rabbitmq.Settings()
+server = settings.server.Settings()
+xray = settings.xray.Settings()

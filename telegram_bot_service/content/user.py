@@ -81,16 +81,16 @@ def PROFILE_COMMAND(
     bot_username: str,
 ) -> str:
     return f"""
-*Профиль пользователя*
+<b>Профиль пользователя</b>
 
-*Id:* {profile_data.user_id}
-*Никнейм:* {profile_data.username}
-*Баланс:* {profile_data.balance}
-*Процент с рефералов:* {profile_data.referral_percentege}%
+<b>Id:</b> {profile_data.user_id}
+<b>Никнейм:</b> {profile_data.username}
+<b>Баланс:</b> {profile_data.balance}
+<b>Процент с рефералов:</b> {profile_data.referral_percentege}%
 
 
-🔗 *Ваша реферальная ссылка*:
-`https://t.me/{bot_username}?start={profile_data.user_id}`
+🔗 <b>Ваша реферальная ссылка</b>:
+<code>https://t.me/{bot_username}?start={profile_data.user_id}</code>
 """
 
 
@@ -102,9 +102,19 @@ def REF_COMMAND(
         referrer_username if referrer_username is not None else "Отсутствует"
     )
     return f"""
-*Информация о рефералах*
+<b>Информация о рефералах</b>
 
-*Вы реферал у* @{referrer_username}
+<b>Вы реферал у</b> @{referrer_username}
 
-*Ваш процент с рефералов:* {referral_percentage}%
+<b>Ваш процент с рефералов:</b> {referral_percentage}%
+"""
+
+
+def REFERRAL_DEPOSIT(
+    data: schemas.user.ReferralDepositInfo,
+) -> str:
+    return f"""
+Реферал @{data.referral_username} пополнил баланс
+
+Вам на счет добавленно {data.amount} рублей
 """

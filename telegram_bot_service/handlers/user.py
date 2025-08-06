@@ -5,6 +5,7 @@ import content.config
 import content.user
 import keyboards
 import logic.list_menu
+import logic.menu
 import rabbit
 
 router = aiogram.Router()
@@ -59,12 +60,8 @@ async def handle_help_command(message: aiogram.types.Message):
 
 @router.message(aiogram.filters.Command("profile"))
 async def handle_profile_command(message: aiogram.types.Message):
-    await rabbit.broker.publish(
-        {
-            "user_id": message.from_user.id,
-            "username": message.from_user.username,
-        },
-        queue="profile_command",
+    await logic.menu.profile_menu_request(
+        user_id=message.from_user.id,
     )
 
 
@@ -179,4 +176,12 @@ async def conf_user_delete_2_query(
             "now_page": callback_data.page,
         },
         queue="delete_config_command",
+    )
+
+
+@router.message(aiogram.filters.Command("menu"))
+async def menu_handler(message: aiogram.types.Message):
+    await logic.menu.main_menu(
+        bot=message.bot,
+        chat_id=message.from_user.id,
     )
