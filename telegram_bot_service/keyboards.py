@@ -431,6 +431,7 @@ def build_main_menu_keyboard(
             ("Рефералы", "ref"),
             ("Пополнить баланс", "dep"),
             ("Конфиги", "conf"),
+            ("К покупкам", "buy"),
         ]
     ]
     return aiogram.types.InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
@@ -457,4 +458,27 @@ def build_back_to_menu_keyboard(
     inline_keyboard = [
         [build_back_to_menu_button(user_id, message_id, action)]
     ]
+    return aiogram.types.InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
+
+
+def build_market_list_keyboard(
+    user_id: int,
+    message_id: int,
+) -> aiogram.types.InlineKeyboardMarkup:
+    inline_keyboard = []
+    inline_keyboard.append(
+        [
+            aiogram.types.InlineKeyboardButton(
+                text="Подписка на открытый ВПН (30 дней) - 1 устройство",
+                callback_data=callback.MarketCallback(
+                    user_id=user_id,
+                    message_id=message_id,
+                    action="",
+                ),
+            )
+        ]
+    )
+    inline_keyboard.append(
+        [build_back_to_main_menu_button(user_id, message_id)]
+    )
     return aiogram.types.InlineKeyboardMarkup(inline_keyboard=inline_keyboard)

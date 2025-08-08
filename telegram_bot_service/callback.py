@@ -67,3 +67,12 @@ class MainMenuCallBack(
     user_id: int
     message_id: int
     action: str
+
+
+class MarketCallback(
+    aiogram.filters.callback_data.CallbackData,
+    prefix="market",
+):
+    user_id: int
+    message_id: int
+    action: str

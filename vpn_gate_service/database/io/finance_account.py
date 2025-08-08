@@ -63,3 +63,13 @@ async def add_amount_on_balance(
         await session.commit()
         await session.refresh(finance_account)
         return finance_account
+
+
+async def withdrawal_on_balance(
+    finance_account_id: int,
+    amount: float,
+) -> database.models.FinanceAccount:
+    return (await add_amount_on_balance(
+        finance_account_id=finance_account_id,
+        amount=-amount,
+    ))

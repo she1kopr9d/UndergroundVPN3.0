@@ -301,3 +301,84 @@ class PaymentReceipt(Base):
     payment_id: sqlalchemy.orm.Mapped[int] = sqlalchemy.orm.mapped_column(
         sqlalchemy.ForeignKey("payments.id"), nullable=False
     )
+
+
+class ProductType(str, enum.Enum):
+    one_time = "one_time"
+    recurring = "recurring"
+
+
+class Product(Base):
+    __tablename__ = "products"
+
+    id: sqlalchemy.orm.Mapped[intpk]
+    name: sqlalchemy.orm.Mapped[typing.Optional[str]]
+    price = sqlalchemy.Column(sqlalchemy.Numeric(10, 2), nullable=False)
+    duration_days: sqlalchemy.orm.Mapped[typing.Optional[int]]
+    product_type = sqlalchemy.Column(
+        sqlalchemy.Enum(ProductType),
+        default=ProductType.recurring,
+        nullable=False
+    )
+
+    created_at: sqlalchemy.orm.Mapped[created_at]
+    updated_at: sqlalchemy.orm.Mapped[updated_at]
+
+
+class SubscriptionStatus(str, enum.Enum):
+    active = "active"
+    expired = "expired"
+    canceled = "canceled"
+
+
+class SubscriptionCharge(Base):
+    __tablename__ = "subscription_charges"
+
+    id: sqlalchemy.orm.Mapped[intpk]
+
+    created_at: sqlalchemy.orm.Mapped[created_at]
+    updated_at: sqlalchemy.orm.Mapped[updated_at]
+
+    subscription_id: sqlalchemy.orm.Mapped[int] = sqlalchemy.orm.mapped_column(
+        sqlalchemy.ForeignKey("subscriptions.id"), nullable=False
+    )
+    subscription: sqlalchemy.orm.Mapped["Subscription"] = (
+        sqlalchemy.orm.relationship(back_populates="charges")
+    )
+    payment_id: sqlalchemy.orm.Mapped[int] = (
+        sqlalchemy.orm.mapped_column(
+            sqlalchemy.ForeignKey("payments.id"),
+        )
+    )
+    payment: sqlalchemy.orm.Mapped["Payment"] = sqlalchemy.orm.relationship()
+
+
+class Subscription(Base):
+    __tablename__ = "subscriptions"
+
+    id: sqlalchemy.orm.Mapped[intpk]
+    start_date: sqlalchemy.orm.Mapped[datetime.datetime]
+    end_date: sqlalchemy.orm.Mapped[datetime.datetime]
+    status: sqlalchemy.orm.Mapped[SubscriptionStatus] = (
+        sqlalchemy.orm.mapped_column(
+            sqlalchemy.Enum(SubscriptionStatus),
+            default=SubscriptionStatus.active,
+            nullable=False
+        )
+    )
+
+    created_at: sqlalchemy.orm.Mapped[created_at]
+    updated_at: sqlalchemy.orm.Mapped[updated_at]
+
+    product_id: sqlalchemy.orm.Mapped[int] = sqlalchemy.orm.mapped_column(
+        sqlalchemy.ForeignKey("products.id"), nullable=False
+    )
+
+    user_id: sqlalchemy.orm.Mapped[int] = sqlalchemy.orm.mapped_column(
+        sqlalchemy.ForeignKey("telegram_users.id"), nullable=False
+    )
+    user: sqlalchemy.orm.Mapped["TelegramUser"] = sqlalchemy.orm.relationship()
+
+    payment_id: sqlalchemy.orm.Mapped[int] = sqlalchemy.orm.mapped_column(
+        sqlalchemy.ForeignKey("payments.id"), nullable=True
+    )

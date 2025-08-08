@@ -118,3 +118,31 @@ async def accept_payment(
             )
         case database.models.PaymentMethod.telegram_star.value:
             pass
+
+
+async def create_withdrawal_payment(
+    finance_account: database.models.FinanceAccount,
+    product: database.models.Product,
+) -> database.models.Payment:
+    payment: database.models.Payment = (
+        await database.io.payments.create_payment(
+            account_id=finance_account.id,
+            amount=product.price,
+            transaction_type=database.models.TransactionType.withdrawal,
+            payment_method=database.models.PaymentMethod.system,
+            mode=database.models.PaymentMode.production,
+        )
+    )
+    return payment
+
+
+async def execute_withdrawal_payment(
+    payment: database.models.Payment,
+    finance_account: database.models.FinanceAccount,
+) -> database.models.FinanceAccount:
+    if payment.status.value != database.models.PaymentStatus.pending.value:
+        raise Exception("Payment has not valid status for withdrawal")
+    finance_account = await database.io.finance_account.withdrawal_on_balance(
+        finance_account_id=finance_account.id,
+        amount=payment.amount,
+    )

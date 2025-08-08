@@ -42,3 +42,13 @@ async def get_object_by_field(
         result = await session.execute(stmt)
         obj = result.scalar_one_or_none()
         return obj
+
+
+async def get_all_objects(
+    object_class: type[database.models.Base],
+) -> list[database.models.Base] | None:
+    async with database.core.async_session_factory() as session:
+        stmt = sqlalchemy.select(object_class)
+        result = await session.execute(stmt)
+        objects = result.scalars().all()
+        return objects

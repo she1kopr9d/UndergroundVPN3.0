@@ -99,6 +99,22 @@ async def deposit_menu(
     )
 
 
+async def market_menu(
+    user_id: int,
+    message_id: int,
+    bot: aiogram.Bot,
+):
+    await bot.edit_message_text(
+        text="Маркет",
+        chat_id=user_id,
+        message_id=message_id,
+        reply_markup=keyboards.build_market_list_keyboard(
+            user_id,
+            message_id,
+        ),
+    )
+
+
 async def profile_menu_request(
     user_id: int,
 ) -> None:

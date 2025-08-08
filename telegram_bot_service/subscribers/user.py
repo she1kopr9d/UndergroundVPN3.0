@@ -34,6 +34,7 @@ async def handle_start(
     await bot.send_message(
         chat_id=data.user_id, text=msg, parse_mode="Markdown"
     )
+    await logic.menu.main_menu(bot, data.user_id)
 
 
 @rabbit.broker.subscriber("create_config_answer")
