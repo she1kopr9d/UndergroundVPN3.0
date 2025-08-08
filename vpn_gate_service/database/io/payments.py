@@ -80,3 +80,18 @@ async def get_moderation_payments_with_pagination(
             )
             for payment in payments
         ], max_page
+
+
+async def set_external_id(
+    payment_id: int,
+    external_id: str,
+):
+    async with database.core.async_session_factory() as session:
+        stmt = (
+            sqlalchemy.update(database.models.Payment)
+            .where(database.models.Payment.id == payment_id)
+            .values(external_id=external_id)
+        )
+
+        await session.execute(stmt)
+        await session.commit()

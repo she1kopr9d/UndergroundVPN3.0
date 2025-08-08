@@ -44,9 +44,11 @@ async def create_payment_handle(
             else database.models.PaymentMode.test
         ),
     )
-    requisite, currency = logic.payment_system.get_requisite(
-        data.method,
+
+    requisite, currency, amount = await logic.payment_system.create_payment(
+        payment=payment_obj,
     )
+
     await router.broker.publish(
         {
             "user_id": data.user_id,
@@ -54,10 +56,7 @@ async def create_payment_handle(
             "payment_id": payment_obj.id,
             "requisite": requisite,
             "currency": currency,
-            "amount": logic.payment_system.get_amount(
-                data.amount,
-                data.method,
-            ),
+            "amount": amount,
             "method": data.method,
         },
         queue="create_payment_answer",
@@ -68,20 +67,17 @@ async def create_payment_handle(
 async def accept_deposit_handle(
     data: schemas.deposit.DepositeMoveData,
 ):
-    await database.io.payments.update_payment_status(
-        data.payment_id,
-        database.models.PaymentStatus.moderation,
+    payment_obj: database.models.Payment = (
+        await database.io.base.get_object_by_id(
+            id=data.payment_id,
+            object_class=database.models.Payment,
+        )
     )
-    await router.broker.publish(
-        queue="new_moderation_payment",
-    )
-    await router.broker.publish(
-        {
-            "user_id": data.user_id,
-            "message_id": data.message_id,
-            "payment_id": data.payment_id,
-        },
-        queue="accept_deposit_answer",
+    await logic.payment_system.accept_payment(
+        payment_obj,
+        router.broker,
+        data.user_id,
+        data.message_id,
     )
 
 
@@ -149,38 +145,15 @@ async def accept_deposit_moder_handler(
     await router.broker.publish(
         {
             "user_id": user_obj.telegram_id,
+            "message_id": data.message_id,
         },
         queue="accept_deposit_moder_to_client",
     )
-    if user_obj.referrer_id is not None:
-        referrer_user_obj: database.models.TelegramUser = (
-            await database.io.base.get_object_by_id(
-                id=user_obj.referrer_id,
-                object_class=database.models.TelegramUser,
-            )
-        )
-        referrer_finance_account_obj: database.models.FinanceAccount = (
-            await database.io.finance_account.get_finance_account(
-                user_id=referrer_user_obj.id,
-            )
-        )
-        referral_percent = referrer_finance_account_obj.referral_percent
-        referral_amount = payment_obj.amount * referral_percent / 100
-        finance_account_obj: database.models.FinanceAccount = (
-            await database.io.finance_account.add_amount_on_balance(
-                finance_account_id=referrer_finance_account_obj.id,
-                amount=referral_amount,
-            )
-        )
-        await router.broker.publish(
-            {
-                "referral_user_id": user_obj.telegram_id,
-                "referral_username": user_obj.username,
-                "user_id": referrer_user_obj.telegram_id,
-                "amount": referral_amount,
-            },
-            queue="now_referral_deposit",
-        )
+    await logic.payment_system.accept_payment_referrer_notification(
+        user_obj,
+        payment_obj,
+        router.broker,
+    )
 
 
 @router.subscriber("cancel_deposit_moder")

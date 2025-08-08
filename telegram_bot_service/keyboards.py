@@ -283,33 +283,54 @@ def build_deposit_keyboard(
     return aiogram.types.InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
 
 
+def build_payment_accept_button(
+    text: str,
+    action: str,
+    data: schemas.deposite.DepositeCreateANSW,
+    link: str | None = None,
+) -> aiogram.types.InlineKeyboardButton:
+    kwargs = dict()
+    if link is not None:
+        kwargs.update(url=link)
+    else:
+        kwargs.update(
+            callback_data=callback.DepositAcceptCallback(
+                action=action,
+                user_id=data.user_id,
+                message_id=data.message_id,
+                payment_id=data.payment_id,
+            ).pack()
+        )
+    return aiogram.types.InlineKeyboardButton(
+        text=text,
+        **kwargs,
+    )
+
+
 def build_payment_accept_keyboard(
     data: schemas.deposite.DepositeCreateANSW,
+    link: str | None = None,
 ) -> aiogram.types.InlineKeyboardMarkup:
-    inline_keyboard = [
-        [
-            aiogram.types.InlineKeyboardButton(
-                text="Подтвердить оплату",
-                callback_data=callback.DepositAcceptCallback(
-                    action="accept",
-                    user_id=data.user_id,
-                    message_id=data.message_id,
-                    payment_id=data.payment_id,
-                ).pack(),
-            )
-        ],
-        [
-            aiogram.types.InlineKeyboardButton(
-                text="Отменить",
-                callback_data=callback.DepositAcceptCallback(
-                    action="cancel",
-                    user_id=data.user_id,
-                    message_id=data.message_id,
-                    payment_id=data.payment_id,
-                ).pack(),
-            )
-        ],
-    ]
+    accept_button = None
+    if data.method == "telegram_star":
+        accept_button = build_payment_accept_button(
+            f"Оплатить {data.amount} ⭐️",
+            None,
+            data,
+            link,
+        )
+    else:
+        accept_button = build_payment_accept_button(
+            "Подтвердить оплату",
+            "accept",
+            data,
+        )
+    cancel_button = build_payment_accept_button(
+        "Отменить",
+        "cancel",
+        data,
+    )
+    inline_keyboard = [[accept_button], [cancel_button]]
     return aiogram.types.InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
 
 

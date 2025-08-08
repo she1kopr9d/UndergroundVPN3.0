@@ -16,14 +16,14 @@ async def deposite_list_router(
     is_handle = await database.io.telegram_user.user_is_handle(
         data,
     )
-    is_admin = await database.io.telegram_user.user_is_handle(
+    is_admin = await database.io.telegram_user.user_is_admin(
         data,
     )
     dep_method = [
-        {
-            "title": "Звездами телеграм",
-            "method": database.models.PaymentMethod.telegram_star,
-        },
+        # {
+        #     "title": "Звездами телеграм",
+        #     "method": database.models.PaymentMethod.telegram_star,
+        # },
         {
             "title": "Криптовалютой",
             "method": database.models.PaymentMethod.crypto,

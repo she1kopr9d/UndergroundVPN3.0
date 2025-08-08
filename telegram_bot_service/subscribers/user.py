@@ -148,12 +148,24 @@ async def create_payment_handler(
 ):
     bot = await deps.get_bot()
 
+    if data.method == "telegram_star":
+        prices = [aiogram.types.LabeledPrice(label="XTR", amount=data.amount)]
+        link = await bot.create_invoice_link(
+            title="Пополнение баланса в боте",
+            description=f"Пополнить баланс на {data.amount/2.5} рублей",
+            prices=prices,
+            provider_token="",
+            payload="channel_support",
+            currency="XTR",
+        )
+
     await bot.edit_message_text(
         chat_id=data.user_id,
         message_id=data.message_id,
         text=content.deposite.DEPOSITE_INFO(data),
         reply_markup=keyboards.build_payment_accept_keyboard(
-            data,
+            data=data,
+            link=link,
         ),
         parse_mode="HTML",
     )
@@ -206,8 +218,16 @@ async def cancel_deposit_moder_to_client_handler(
 
 @rabbit.broker.subscriber("accept_deposit_moder_to_client")
 async def accept_deposit_moder_to_client_handler(
-    data: schemas.user.UserIdANSW,
+    data: schemas.base.DefaultTelegramANSW,
 ):
+    bot = await deps.get_bot()
+    try:
+        await bot.edit_message_reply_markup(
+            chat_id=data.user_id,
+            message_id=data.message_id,
+        )
+    except Exception:
+        pass
     await deposit_moder_to_client(
         data=data,
         text="Модерация одобрила ваш платеж, в /profile пополнился баланс",
@@ -224,3 +244,35 @@ async def now_referral_deposit_handler(
         chat_id=data.user_id,
         text=content.user.REFERRAL_DEPOSIT(data),
     )
+
+
+@rabbit.broker.subscriber("crypto_payment_not_paid")
+async def crypto_payment_not_paid_handler(
+    data: schemas.base.DefaultTelegramANSW,
+):
+    bot = await deps.get_bot()
+
+    await bot.send_message(
+        chat_id=data.user_id,
+        text="Платеж не найден, либо он в обработке.",
+    )
+
+
+# def payment_keyboard():
+#     builder = aiogram.utils.keyboard.InlineKeyboardBuilder()
+#     builder.button(text="Оплатить 20 ⭐️", pay=True)
+#     return builder.as_markup()
+
+
+# @router.message(aiogram.filters.Command('pay'))
+# async def cmd_pay(message: aiogram.types.Message):
+#     prices = [aiogram.types.LabeledPrice(label="XTR", amount=20)]
+#     await message.answer_invoice(
+#         title="Поддержка канала",
+#         description="Поддержать канал на 20 звёзд!",
+#         prices=prices,
+#         provider_token="",
+#         payload="channel_support",
+#         currency="XTR",
+#         reply_markup=payment_keyboard(),
+#     )
