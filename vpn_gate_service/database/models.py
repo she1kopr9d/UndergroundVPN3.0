@@ -382,3 +382,9 @@ class Subscription(Base):
     payment_id: sqlalchemy.orm.Mapped[int] = sqlalchemy.orm.mapped_column(
         sqlalchemy.ForeignKey("payments.id"), nullable=True
     )
+
+    charges: sqlalchemy.orm.Mapped[list["SubscriptionCharge"]] = (
+        sqlalchemy.orm.relationship(
+            back_populates="subscription", cascade="all, delete-orphan"
+        )
+    )

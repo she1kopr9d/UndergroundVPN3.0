@@ -1,9 +1,9 @@
 import config
-import faststream.rabbit.fastapi
-import schemas.product
 import database.io.base
 import database.models
+import faststream.rabbit.fastapi
 import logic.buy_product
+import schemas.product
 
 router = faststream.rabbit.fastapi.RabbitRouter(config.rabbitmq.rabbitmq_url)
 

@@ -1,5 +1,4 @@
 import database.models
-
 import faststream.rabbit
 import logic.payment_system
 

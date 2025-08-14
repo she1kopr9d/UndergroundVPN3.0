@@ -10,7 +10,6 @@ import routers.rabbit.user
 import routers.servers
 import routers.user
 
-
 app = fastapi.FastAPI()
 app.include_router(routers.deposite.router)
 app.include_router(routers.dev.router)

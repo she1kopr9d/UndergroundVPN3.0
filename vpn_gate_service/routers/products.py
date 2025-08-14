@@ -1,9 +1,7 @@
 import config
-import faststream.rabbit.fastapi
-
 import database.io.base
 import database.models
-
+import faststream.rabbit.fastapi
 import schemas.product
 
 router = faststream.rabbit.fastapi.RabbitRouter(

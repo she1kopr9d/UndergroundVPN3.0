@@ -1,8 +1,7 @@
-import pydantic
 import typing
 
 import database.models
-
+import pydantic
 import schemas.base
 
 

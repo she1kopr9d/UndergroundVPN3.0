@@ -149,6 +149,7 @@ async def create_payment_handler(
 ):
     bot = await deps.get_bot()
 
+    link = None
     if data.method == "telegram_star":
         prices = [aiogram.types.LabeledPrice(label="XTR", amount=data.amount)]
         link = await bot.create_invoice_link(
