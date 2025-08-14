@@ -5,8 +5,8 @@ import schemas.config
 import schemas.deposite
 import schemas.moderator
 import schemas.payments
-import schemas.user
 import schemas.product
+import schemas.user
 
 
 def build_main_menu_button(

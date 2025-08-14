@@ -2,9 +2,9 @@ import config
 import database.io.base
 import database.io.config
 import database.io.finance_account
+import database.io.products
 import database.io.referrals
 import database.io.telegram_user
-import database.io.products
 import database.models
 import faststream.rabbit.fastapi
 import logic.server_query

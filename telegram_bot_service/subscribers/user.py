@@ -9,9 +9,9 @@ import logic.menu
 import rabbit
 import schemas.base
 import schemas.config
-import schemas.product
 import schemas.deposite
 import schemas.payments
+import schemas.product
 import schemas.user
 
 

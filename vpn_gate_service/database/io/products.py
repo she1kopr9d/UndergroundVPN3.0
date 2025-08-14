@@ -1,12 +1,11 @@
-import sqlalchemy
-import sqlalchemy.orm
 import typing
 
 import database.core
 import database.models
-
-import schemas.telegram
 import schemas.product
+import schemas.telegram
+import sqlalchemy
+import sqlalchemy.orm
 
 
 async def get_products_with_pagination(
