@@ -4,6 +4,7 @@ import database.io.config
 import database.io.finance_account
 import database.io.referrals
 import database.io.telegram_user
+import database.io.products
 import database.models
 import faststream.rabbit.fastapi
 import logic.server_query
@@ -120,6 +121,25 @@ async def conf_command_handler(data: schemas.telegram.RefPage):
             "now_page": data.page,
         },
         queue="conf_command_answer",
+    )
+
+
+@router.subscriber("market_command")
+async def market_command_handler(data: schemas.telegram.MarketPage):
+    products, max_page = (
+        await database.io.products.get_products_with_pagination(
+            data,
+        )
+    )
+    await router.broker.publish(
+        {
+            "user_id": data.user_id,
+            "message_id": data.message_id,
+            "products": products,
+            "max_page": max_page,
+            "now_page": data.page,
+        },
+        queue="market_command_answer",
     )
 
 

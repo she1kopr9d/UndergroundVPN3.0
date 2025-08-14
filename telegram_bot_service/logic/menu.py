@@ -4,6 +4,7 @@ import keyboards
 import logic.payments
 import rabbit
 import schemas.config
+import schemas.product
 import schemas.user
 
 
@@ -100,17 +101,15 @@ async def deposit_menu(
 
 
 async def market_menu(
-    user_id: int,
-    message_id: int,
     bot: aiogram.Bot,
+    data: schemas.product.ProductListData,
 ):
     await bot.edit_message_text(
         text="Маркет",
-        chat_id=user_id,
-        message_id=message_id,
-        reply_markup=keyboards.build_market_list_keyboard(
-            user_id,
-            message_id,
+        chat_id=data.user_id,
+        message_id=data.message_id,
+        reply_markup=keyboards.build_market_keyboard(
+            data,
         ),
     )
 

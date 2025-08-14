@@ -318,7 +318,7 @@ class Product(Base):
     product_type = sqlalchemy.Column(
         sqlalchemy.Enum(ProductType),
         default=ProductType.recurring,
-        nullable=False
+        nullable=False,
     )
 
     created_at: sqlalchemy.orm.Mapped[created_at]
@@ -345,10 +345,8 @@ class SubscriptionCharge(Base):
     subscription: sqlalchemy.orm.Mapped["Subscription"] = (
         sqlalchemy.orm.relationship(back_populates="charges")
     )
-    payment_id: sqlalchemy.orm.Mapped[int] = (
-        sqlalchemy.orm.mapped_column(
-            sqlalchemy.ForeignKey("payments.id"),
-        )
+    payment_id: sqlalchemy.orm.Mapped[int] = sqlalchemy.orm.mapped_column(
+        sqlalchemy.ForeignKey("payments.id"),
     )
     payment: sqlalchemy.orm.Mapped["Payment"] = sqlalchemy.orm.relationship()
 
@@ -363,7 +361,7 @@ class Subscription(Base):
         sqlalchemy.orm.mapped_column(
             sqlalchemy.Enum(SubscriptionStatus),
             default=SubscriptionStatus.active,
-            nullable=False
+            nullable=False,
         )
     )
 

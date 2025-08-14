@@ -6,6 +6,7 @@ import schemas.deposite
 import schemas.moderator
 import schemas.payments
 import schemas.user
+import schemas.product
 
 
 def build_main_menu_button(
@@ -480,5 +481,37 @@ def build_market_list_keyboard(
     )
     inline_keyboard.append(
         [build_back_to_main_menu_button(user_id, message_id)]
+    )
+    return aiogram.types.InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
+
+
+def build_market_keyboard(
+    data: schemas.product.ProductListData,
+) -> aiogram.types.InlineKeyboardMarkup:
+    inline_keyboard = []
+    prefix = "market"
+    for product in data.products:
+        button = aiogram.types.InlineKeyboardButton(
+            text=f"{product.product_name}",
+            callback_data=callback.CellCallback(
+                action="open",
+                user_id=data.user_id,
+                message_id=data.message_id,
+                page=data.now_page,
+                external_id=product.product_id,
+                second_prefix=prefix,
+            ).pack(),
+        )
+        inline_keyboard.append([button])
+    paggination_row = get_paggination_row(
+        data,
+        data.user_id,
+        data.message_id,
+        prefix,
+    )
+    if paggination_row:
+        inline_keyboard.append(paggination_row)
+    inline_keyboard.append(
+        [build_back_to_main_menu_button(data.user_id, data.message_id)]
     )
     return aiogram.types.InlineKeyboardMarkup(inline_keyboard=inline_keyboard)

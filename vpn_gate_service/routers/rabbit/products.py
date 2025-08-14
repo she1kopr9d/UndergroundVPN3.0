@@ -26,11 +26,9 @@ async def buy_product_handler(
             object_class=database.models.FinanceAccount,
         )
     )
-    product: database.models.Product = (
-        await database.io.base.get_object_by_id(
-            id=data.product_id,
-            object_class=database.models.Product,
-        )
+    product: database.models.Product = await database.io.base.get_object_by_id(
+        id=data.product_id,
+        object_class=database.models.Product,
     )
     await logic.buy_product.make_a_purchase(
         user=user,

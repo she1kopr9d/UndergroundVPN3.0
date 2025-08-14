@@ -50,6 +50,10 @@ class PayPage(PagginationPage):
     pass
 
 
+class MarketPage(PagginationPage):
+    pass
+
+
 class Referral(pydantic.BaseModel):
     user_id: int
     username: str

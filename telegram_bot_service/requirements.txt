@@ -1,9 +1,6 @@
 aiogram
-
 pydantic
 pydantic-settings
-
 faststream
 faststream[rabbit]
-
 httpx

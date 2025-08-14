@@ -76,6 +76,11 @@ async def conf_command_handler(message: aiogram.types.Message):
     await logic.list_menu.load_page_handler(message, "conf_command")
 
 
+@router.message(aiogram.filters.Command("market"))
+async def market_command_handler(message: aiogram.types.Message):
+    await logic.list_menu.load_page_handler(message, "market_command")
+
+
 @router.callback_query(callback.PageCallback.filter())
 async def page_query(
     query: aiogram.types.CallbackQuery,

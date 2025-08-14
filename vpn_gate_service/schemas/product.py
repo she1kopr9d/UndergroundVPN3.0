@@ -16,3 +16,8 @@ class ProductShortSchema(pydantic.BaseModel):
 
 class BuyProductData(schemas.base.DefaultTelegramData):
     product_id: int
+
+
+class ProductInfo(pydantic.BaseModel):
+    product_id: int
+    product_name: str

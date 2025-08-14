@@ -5,6 +5,7 @@ import sys
 import deps
 import handlers.admin
 import handlers.deposit
+import handlers.market
 import handlers.menu
 import handlers.moderator
 import handlers.user
@@ -23,6 +24,7 @@ async def main():
         deps.dp.include_router(handlers.admin.router)
         deps.dp.include_router(handlers.deposit.router)
         deps.dp.include_router(handlers.user.router)
+        deps.dp.include_router(handlers.market.router)
         deps.dp.include_router(handlers.moderator.router)
         deps.dp.include_router(handlers.menu.router)
         async with rabbit.broker:

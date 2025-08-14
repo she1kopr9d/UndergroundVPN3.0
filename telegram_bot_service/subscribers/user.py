@@ -9,6 +9,7 @@ import logic.menu
 import rabbit
 import schemas.base
 import schemas.config
+import schemas.product
 import schemas.deposite
 import schemas.payments
 import schemas.user
@@ -99,6 +100,14 @@ async def conf_command_handler(
 ):
     bot = await deps.get_bot()
     await logic.menu.config_menu(bot, data)
+
+
+@rabbit.broker.subscriber("market_command_answer")
+async def market_command_handler(
+    data: schemas.product.ProductListData,
+):
+    bot = await deps.get_bot()
+    await logic.menu.market_menu(bot, data)
 
 
 @rabbit.broker.subscriber("conf_info_command_answer")

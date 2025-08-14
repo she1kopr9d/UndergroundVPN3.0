@@ -22,15 +22,17 @@ async def market_handler(message: aiogram.types.Message):
     )
 
 
-@router.callback_query(callback.MainMenuCallBack.filter(
-    aiogram.F.action == "buy",
-))
+@router.callback_query(
+    callback.MainMenuCallBack.filter(
+        aiogram.F.action == "buy",
+    )
+)
 async def market_callback_handler(
     query: aiogram.types.CallbackQuery,
     callback_data: callback.MainMenuCallBack,
 ):
-    await logic.menu.market_menu(
+    await logic.list_menu.publish_list_menu(
+        queue="market_command",
         user_id=callback_data.user_id,
         message_id=callback_data.message_id,
-        bot=query.bot,
     )

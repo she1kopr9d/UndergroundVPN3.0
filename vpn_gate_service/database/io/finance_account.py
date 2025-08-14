@@ -69,7 +69,7 @@ async def withdrawal_on_balance(
     finance_account_id: int,
     amount: float,
 ) -> database.models.FinanceAccount:
-    return (await add_amount_on_balance(
+    return await add_amount_on_balance(
         finance_account_id=finance_account_id,
         amount=-amount,
-    ))
+    )
