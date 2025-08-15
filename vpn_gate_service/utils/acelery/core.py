@@ -1,5 +1,5 @@
-import celery
 import asyncio
+import celery
 import functools
 
 

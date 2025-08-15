@@ -149,3 +149,4 @@ async def execute_withdrawal_payment(
         finance_account_id=finance_account.id,
         amount=payment.amount,
     )
+    return finance_account

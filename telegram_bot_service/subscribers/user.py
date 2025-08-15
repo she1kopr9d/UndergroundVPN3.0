@@ -283,3 +283,29 @@ async def product_info_handler(
         reply_markup=keyboards.build_product_info_keyboard(data),
         parse_mode="HTML",
     )
+
+
+@rabbit.broker.subscriber("execute_withdrawal_payment")
+async def execute_withdrawal_payment_handler(
+    data: schemas.deposite.WithdrawalInfo,
+):
+    bot = await deps.get_bot()
+
+    await bot.send_message(
+        chat_id=data.user_id,
+        text=content.deposite.WITHDRAWAL_INFO(data),
+        parse_mode="HTML",
+    )
+
+
+@rabbit.broker.subscriber("error_withdrawal_payment")
+async def error_withdrawal_payment_handler(
+    data: schemas.deposite.WithdrawalInfo,
+):
+    bot = await deps.get_bot()
+
+    await bot.send_message(
+        chat_id=data.user_id,
+        text=content.deposite.ERROR_WITHDRAWAL_INFO(data),
+        parse_mode="HTML",
+    )

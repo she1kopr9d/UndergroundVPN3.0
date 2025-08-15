@@ -1,5 +1,3 @@
-import asyncio
-
 import celery_app
 import logic.server_query
 import rabbit

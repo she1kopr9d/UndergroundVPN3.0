@@ -9,3 +9,10 @@ class DepositeCreateANSW(pydantic.BaseModel):
     currency: str | None
     amount: float
     method: str
+
+
+class WithdrawalInfo(pydantic.BaseModel):
+    user_id: int
+    amount: float
+    now_balance: float
+    status: str
