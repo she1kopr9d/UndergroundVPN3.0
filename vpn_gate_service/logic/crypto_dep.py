@@ -75,6 +75,7 @@ async def accept_payment(
             },
             queue="accept_deposit_moder_to_client",
         )
+        return True
     else:
         await broker.publish(
             {
@@ -83,3 +84,4 @@ async def accept_payment(
             },
             "crypto_payment_not_paid",
         )
+        return False

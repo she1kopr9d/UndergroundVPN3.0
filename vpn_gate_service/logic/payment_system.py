@@ -101,21 +101,24 @@ async def accept_payment(
                 payment, broker, user_id, message_id
             )
         case database.models.PaymentMethod.crypto.value:
-            await logic.crypto_dep.accept_payment(
-                payment, broker, user_id, message_id
-            )
-            user_obj: database.models.TelegramUser = (
-                await database.io.base.get_object_by_field(
-                    field=database.models.TelegramUser.telegram_id,
-                    value=user_id,
-                    object_class=database.models.TelegramUser,
+            is_ok = (
+                await logic.crypto_dep.accept_payment(
+                    payment, broker, user_id, message_id
                 )
             )
-            await accept_payment_referrer_notification(
-                user_obj,
-                payment,
-                broker,
-            )
+            if is_ok:
+                user_obj: database.models.TelegramUser = (
+                    await database.io.base.get_object_by_field(
+                        field=database.models.TelegramUser.telegram_id,
+                        value=user_id,
+                        object_class=database.models.TelegramUser,
+                    )
+                )
+                await accept_payment_referrer_notification(
+                    user_obj,
+                    payment,
+                    broker,
+                )
         case database.models.PaymentMethod.telegram_star.value:
             pass
 

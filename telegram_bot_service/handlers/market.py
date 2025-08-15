@@ -36,3 +36,15 @@ async def market_callback_handler(
         user_id=callback_data.user_id,
         message_id=callback_data.message_id,
     )
+
+
+@router.callback_query(
+    callback.CellCallback.filter(
+        aiogram.F.second_prefix == "market",
+    )
+)
+async def product_handler(
+    query: aiogram.types.CallbackQuery,
+    callback_data: callback.CellCallback,
+):
+    pass
