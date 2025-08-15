@@ -69,16 +69,35 @@ services:
         networks:
             - undergroundvpn
     
-    # telegram-bot-broker:
-    #     build: ./telegram_bot_service
-    #     command: python main.py broker
-    #     env_file:
-    #         - .env
-    #     depends_on:
-    #         rabbitmq:
-    #             condition: service_healthy
-    #     networks:
-    #         - undergroundvpn
+    celery-worker:
+        build: ./vpn_gate_service
+        command: celery -A celery_app.app worker --loglevel=info
+        env_file:
+            - .env
+        depends_on:
+            rabbitmq:
+                condition: service_healthy
+            db:
+                condition: service_healthy
+        networks:
+            - undergroundvpn
+        volumes:
+            - ./vpn_gate_service:/app
+
+    celery-beat:
+        build: ./vpn_gate_service
+        command: celery -A celery_app.app beat --loglevel=info
+        env_file:
+            - .env
+        depends_on:
+            rabbitmq:
+                condition: service_healthy
+            db:
+                condition: service_healthy
+        networks:
+            - undergroundvpn
+        volumes:
+            - ./vpn_gate_service:/app
 
 volumes:
     postgres_data:

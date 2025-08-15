@@ -386,3 +386,15 @@ class Subscription(Base):
             back_populates="subscription", cascade="all, delete-orphan"
         )
     )
+
+
+class ExecuteProduct(Base):
+    __tablename__ = "execute_products"
+
+    id: sqlalchemy.orm.Mapped[intpk]
+
+    executor_name: sqlalchemy.orm.Mapped[str]
+
+    product_id: sqlalchemy.orm.Mapped[int] = sqlalchemy.orm.mapped_column(
+        sqlalchemy.ForeignKey("products.id"),
+    )

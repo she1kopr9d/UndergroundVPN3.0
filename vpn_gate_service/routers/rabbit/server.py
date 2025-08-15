@@ -8,6 +8,7 @@ import logic.server_session
 import schemas.config
 import schemas.servers
 import schemas.telegram
+import tasks.config
 
 router = faststream.rabbit.fastapi.RabbitRouter(config.rabbitmq.rabbitmq_url)
 
@@ -15,19 +16,22 @@ router = faststream.rabbit.fastapi.RabbitRouter(config.rabbitmq.rabbitmq_url)
 @router.subscriber("create_config")
 async def handle_create_config(data: schemas.config.CreateConfig):
     server = logic.server_session.get_active_server(data.server_name)
+    tasks.config.create_config_task.delay({
+        "user": data.dict(),
+        "server": server.dict(),
+    })
+    # config_url = await logic.server_query.create_config(
+    #     create_data=data,
+    #     server_data=server,
+    # )
 
-    config_url = await logic.server_query.create_config(
-        create_data=data,
-        server_data=server,
-    )
-
-    await router.broker.publish(
-        {
-            "user_id": data.user_id,
-            "config_url": config_url,
-        },
-        queue="create_config_answer",
-    )
+    # await router.broker.publish(
+    #     {
+    #         "user_id": data.user_id,
+    #         "config_url": config_url,
+    #     },
+    #     queue="create_config_answer",
+    # )
 
 
 @router.subscriber("create_server")

@@ -515,3 +515,62 @@ def build_market_keyboard(
         [build_back_to_main_menu_button(data.user_id, data.message_id)]
     )
     return aiogram.types.InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
+
+
+def build_product_info_keyboard(
+    data: schemas.product.ProductView,
+):
+    inline_keyboard = []
+    inline_keyboard.append([
+        aiogram.types.InlineKeyboardButton(
+            text="Купить",
+            callback_data=callback.CellCallback(
+                action="buy_1",
+                user_id=data.user_id,
+                message_id=data.message_id,
+                page=data.page,
+                external_id=data.product_id,
+                second_prefix="market",
+            ).pack(),
+        )
+    ])
+    inline_keyboard.append([build_main_menu_button(
+        "Назад",
+        "buy",
+        data.user_id,
+        data.message_id
+    )])
+    return aiogram.types.InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
+
+
+def build_product_accept_buy_keyboard(
+    data: callback.CellCallback,
+):
+    inline_keyboard = []
+    inline_keyboard.append([
+        aiogram.types.InlineKeyboardButton(
+            text="Назад",
+            callback_data=callback.CellCallback(
+                action="open",
+                user_id=data.user_id,
+                message_id=data.message_id,
+                page=data.page,
+                external_id=data.external_id,
+                second_prefix=data.second_prefix,
+            ).pack(),
+        )
+    ])
+    inline_keyboard.append([
+        aiogram.types.InlineKeyboardButton(
+            text="Подтвердить",
+            callback_data=callback.CellCallback(
+                action="buy_2",
+                user_id=data.user_id,
+                message_id=data.message_id,
+                page=data.page,
+                external_id=data.external_id,
+                second_prefix=data.second_prefix,
+            ).pack(),
+        )
+    ])
+    return aiogram.types.InlineKeyboardMarkup(inline_keyboard=inline_keyboard)

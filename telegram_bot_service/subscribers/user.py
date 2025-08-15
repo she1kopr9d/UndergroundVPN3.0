@@ -1,6 +1,7 @@
 import aiogram.fsm.context
 import content.config
 import content.deposite
+import content.product
 import content.user
 import deps
 import keyboards
@@ -269,21 +270,16 @@ async def crypto_payment_not_paid_handler(
     )
 
 
-# def payment_keyboard():
-#     builder = aiogram.utils.keyboard.InlineKeyboardBuilder()
-#     builder.button(text="Оплатить 20 ⭐️", pay=True)
-#     return builder.as_markup()
+@rabbit.broker.subscriber("product_info_answer")
+async def product_info_handler(
+    data: schemas.product.ProductView,
+):
+    bot = await deps.get_bot()
 
-
-# @router.message(aiogram.filters.Command('pay'))
-# async def cmd_pay(message: aiogram.types.Message):
-#     prices = [aiogram.types.LabeledPrice(label="XTR", amount=20)]
-#     await message.answer_invoice(
-#         title="Поддержка канала",
-#         description="Поддержать канал на 20 звёзд!",
-#         prices=prices,
-#         provider_token="",
-#         payload="channel_support",
-#         currency="XTR",
-#         reply_markup=payment_keyboard(),
-#     )
+    await bot.edit_message_text(
+        chat_id=data.user_id,
+        message_id=data.message_id,
+        text=content.product.PRODUCT_INFO(data),
+        reply_markup=keyboards.build_product_info_keyboard(data),
+        parse_mode="HTML",
+    )

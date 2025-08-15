@@ -12,3 +12,13 @@ class ProductListData(
     schemas.base.DefaultTelegramANSW,
 ):
     products: list[ProductCellInfo]
+
+
+class ProductView(
+    schemas.base.DefaultTelegramANSW,
+    ProductCellInfo,
+):
+    page: int
+    product_type: str
+    product_price: float
+    duration_days: int | None

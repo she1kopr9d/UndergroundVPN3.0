@@ -14,10 +14,32 @@ class ProductShortSchema(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(from_attributes=True)
 
 
-class BuyProductData(schemas.base.DefaultTelegramData):
+class ProductId(schemas.base.DefaultTelegramData):
     product_id: int
+
+
+class ProductGet(ProductId):
+    pass
+
+
+class ProductGetPaggination(ProductId):
+    page: int
+
+
+class BuyProductData(ProductGet):
+    pass
 
 
 class ProductInfo(pydantic.BaseModel):
     product_id: int
     product_name: str
+
+
+class ProductView(
+    schemas.base.DefaultTelegramData,
+    ProductInfo,
+):
+    page: int
+    product_type: str
+    product_price: float
+    duration_days: int | None
