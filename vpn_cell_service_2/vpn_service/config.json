@@ -37,6 +37,12 @@
             "id": "9b8eac49-c60b-4d22-84e0-9eef39916853",
             "flow": "xtls-rprx-vision",
             "level": 0
+          },
+          {
+            "email": "privet@user.id",
+            "id": "096c025f-c0ef-4c47-b1ae-025142510be1",
+            "flow": "xtls-rprx-vision",
+            "level": 0
           }
         ],
         "decryption": "none"

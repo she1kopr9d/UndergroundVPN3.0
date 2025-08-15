@@ -1,16 +1,18 @@
-import celery
+import utils.acelery
 
 import config
+import rabbit
 
 
-app = celery.Celery(
+app = utils.acelery.AsyncCelery(
     "worker",
     broker=config.rabbitmq.rabbitmq_url,
     backend=config.celery.CELERY_RESULT_BACKEND,
+    broker_instance=rabbit.broker,
 )
 
 
-import tasks
+import tasks # noqa
 
 
 app.conf.beat_schedule = {
