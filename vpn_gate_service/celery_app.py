@@ -12,7 +12,7 @@ app = utils.acelery.AsyncCelery(
 )
 
 
-import tasks # noqa
+import tasks  # noqa
 
 
 app.conf.beat_schedule = {

@@ -37,8 +37,7 @@ async def market_callback_handler(
 
 @router.callback_query(
     callback.CellCallback.filter(
-        (aiogram.F.second_prefix == "market")
-        & (aiogram.F.action == "open")
+        (aiogram.F.second_prefix == "market") & (aiogram.F.action == "open")
     )
 )
 async def product_handler(
@@ -58,8 +57,7 @@ async def product_handler(
 
 @router.callback_query(
     callback.CellCallback.filter(
-        (aiogram.F.second_prefix == "market")
-        & (aiogram.F.action == "buy_1")
+        (aiogram.F.second_prefix == "market") & (aiogram.F.action == "buy_1")
     )
 )
 async def product_buy_accept_handler(
@@ -77,8 +75,7 @@ async def product_buy_accept_handler(
 
 @router.callback_query(
     callback.CellCallback.filter(
-        (aiogram.F.second_prefix == "market")
-        & (aiogram.F.action == "buy_2")
+        (aiogram.F.second_prefix == "market") & (aiogram.F.action == "buy_2")
     )
 )
 async def product_buy_accepted_handler(

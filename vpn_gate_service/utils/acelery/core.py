@@ -12,11 +12,14 @@ class AsyncCelery(celery.Celery):
         """
         Декоратор для асинхронных Celery задач без брокера.
         """
+
         def decorator(async_func):
             @functools.wraps(async_func)
             def sync_wrapper(*args, **kwargs):
                 return asyncio.run(async_func(*args, **kwargs))
+
             return self.task(name=name)(sync_wrapper)
+
         return decorator
 
     def async_task_with_broker(self, name: str):
@@ -32,6 +35,9 @@ class AsyncCelery(celery.Celery):
                 async def runner():
                     async with self._broker_instance:
                         return await async_func(*args, **kwargs)
+
                 return asyncio.run(runner())
+
             return self.task(name=name)(sync_wrapper)
+
         return decorator

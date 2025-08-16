@@ -16,10 +16,12 @@ router = faststream.rabbit.fastapi.RabbitRouter(config.rabbitmq.rabbitmq_url)
 @router.subscriber("create_config")
 async def handle_create_config(data: schemas.config.CreateConfig):
     server = logic.server_session.get_active_server(data.server_name)
-    tasks.config.create_config_task.delay({
-        "user": data.dict(),
-        "server": server.dict(),
-    })
+    tasks.config.create_config_task.delay(
+        {
+            "user": data.dict(),
+            "server": server.dict(),
+        }
+    )
     # config_url = await logic.server_query.create_config(
     #     create_data=data,
     #     server_data=server,

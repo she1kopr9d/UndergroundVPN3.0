@@ -7,8 +7,8 @@ import schemas.config
 
 @celery_app.app.async_task_with_broker(name="tasks.create_config_task")
 async def create_config_task(data: dict):
-    user: schemas.config.CreateConfig = (
-        schemas.config.CreateConfig(**data["user"])
+    user: schemas.config.CreateConfig = schemas.config.CreateConfig(
+        **data["user"]
     )
     server: schemas.servers.ServerPublicInfo = (
         schemas.servers.ServerPublicInfo(**data["server"])

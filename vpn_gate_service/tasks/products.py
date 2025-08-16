@@ -1,5 +1,5 @@
 import celery_app
-import rabbit # noqa
+import rabbit  # noqa
 
 
 @celery_app.app.async_task_with_broker(name="tasks.exec_vpn_30_days")

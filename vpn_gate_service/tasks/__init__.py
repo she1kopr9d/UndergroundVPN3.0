@@ -20,9 +20,7 @@ __all__ = [
 ]
 
 
-def get_func_complex(
-    exec, remove
-) -> dict:
+def get_func_complex(exec, remove) -> dict:
     return {
         "exec": exec,
         "remove": remove,

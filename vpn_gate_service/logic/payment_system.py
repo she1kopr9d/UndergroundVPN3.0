@@ -101,10 +101,8 @@ async def accept_payment(
                 payment, broker, user_id, message_id
             )
         case database.models.PaymentMethod.crypto.value:
-            is_ok = (
-                await logic.crypto_dep.accept_payment(
-                    payment, broker, user_id, message_id
-                )
+            is_ok = await logic.crypto_dep.accept_payment(
+                payment, broker, user_id, message_id
             )
             if is_ok:
                 user_obj: database.models.TelegramUser = (

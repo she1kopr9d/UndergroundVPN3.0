@@ -1,9 +1,7 @@
 import schemas.product
 
 
-def PRODUCT_INFO(
-    data: schemas.product.ProductView
-):
+def PRODUCT_INFO(data: schemas.product.ProductView):
     product_type = None
     match data.product_type:
         case "recurring":
