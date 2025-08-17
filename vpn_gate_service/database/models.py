@@ -387,6 +387,10 @@ class Subscription(Base):
         )
     )
 
+    external_id: sqlalchemy.orm.Mapped[int] = sqlalchemy.orm.mapped_column(
+        sqlalchemy.Integer, nullable=True, unique=True
+    )
+
 
 class ExecuteProduct(Base):
     __tablename__ = "execute_products"

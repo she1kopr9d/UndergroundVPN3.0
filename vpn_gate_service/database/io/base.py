@@ -52,3 +52,23 @@ async def get_all_objects(
         result = await session.execute(stmt)
         objects = result.scalars().all()
         return objects
+
+
+async def update_field(
+    object_class: type[database.models.Base],
+    search_field,
+    search_value,
+    update_list,
+) -> database.models.Base:
+    async with database.core.async_session_factory() as session:
+        stmt = (
+            sqlalchemy.update(object_class)
+            .where(search_field == search_value)
+            .values(**update_list)
+            .returning(object_class)
+        )
+        result = await session.execute(stmt)
+        obj = result.scalar_one()
+        await session.commit()
+        await session.refresh(obj)
+        return obj

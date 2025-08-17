@@ -1,107 +1,105 @@
 services:
+  db:
+    image: postgres:15
+    ports:
+      - "5433:5432"
+    networks:
+      - undergroundvpn
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    env_file:
+      - .env
+    logging:
+      driver: "none"
+    healthcheck:
+        test: ["CMD-SHELL", "pg_isready"]
+        interval: 5s
+        timeout: 5s
+        retries: 10
+  vpn-gate:
+    build: ./vpn_gate_service
+    command: uvicorn main:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    volumes:
+      - ./vpn_gate_service:/app
+      - ./vpn_gate_service/uploads:/app/uploads
+    networks:
+      - undergroundvpn
 
-    vpn-gate:
-        build: ./vpn_gate_service
-        command: uvicorn main:app --host 0.0.0.0 --port 8000
-        ports:
-            - "8000:8000"
-        env_file:
-            - .env
-        depends_on:
-            db:
-                condition: service_healthy
-            rabbitmq:
-                condition: service_healthy
-        volumes:
-            - ./vpn_gate_service:/app
-            - ./vpn_gate_service/uploads:/app/uploads
-        networks:
-            - undergroundvpn
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    env_file:
+      - .env
+    networks:
+      - undergroundvpn
+    environment:
+      RABBITMQ_LOGS: "-"
+      RABBITMQ_LOG_LEVEL: "warning"
+    logging:
+      driver: "none"
+    healthcheck:
+        test: ["CMD", "rabbitmq-diagnostics", "status"]
+        interval: 10s
+        timeout: 5s
+        retries: 10
 
-    db:
-        image: postgres:15
-        env_file:
-            - .env
-        ports:
-            - "5432:5432"
-        networks:
-            - undergroundvpn
-        healthcheck:
-            test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
-            interval: 5s
-            timeout: 5s
-            retries: 5
-        volumes:
-            - postgres_data:/var/lib/postgresql/data
-        environment:
-            POSTGRES_LOGGING_COLLECTOR: "off"
-        logging:
-            driver: "none"
+  telegram-bot:
+    build: ./telegram_bot_service
+    command: python main.py bot
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - undergroundvpn
 
-    rabbitmq:
-        image: rabbitmq:3-management
-        container_name: rabbitmq
-        ports:
-        - "5672:5672"
-        - "15672:15672"
-        env_file:
-            - .env
-        networks:
-            - undergroundvpn
-        healthcheck:
-            test: ["CMD", "rabbitmq-diagnostics", "ping"]
-            interval: 10s
-            timeout: 5s
-            retries: 5
-        environment:
-            RABBITMQ_LOGS: "-"
-            RABBITMQ_LOG_LEVEL: "warning"
-        logging:
-            driver: "none"
-    telegram-bot:
-        build: ./telegram_bot_service
-        command: python main.py bot
-        env_file:
-            - .env
-        depends_on:
-            rabbitmq:
-                condition: service_healthy
-        networks:
-            - undergroundvpn
-    
-    celery-worker:
-        build: ./vpn_gate_service
-        command: celery -A celery_app.app worker --loglevel=info
-        env_file:
-            - .env
-        depends_on:
-            rabbitmq:
-                condition: service_healthy
-            db:
-                condition: service_healthy
-        networks:
-            - undergroundvpn
-        volumes:
-            - ./vpn_gate_service:/app
+  celery-worker:
+    build: ./vpn_gate_service
+    command: celery -A celery_app.app worker --loglevel=info
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - undergroundvpn
+    volumes:
+      - ./vpn_gate_service:/app
 
-    celery-beat:
-        build: ./vpn_gate_service
-        command: celery -A celery_app.app beat --loglevel=info
-        env_file:
-            - .env
-        depends_on:
-            rabbitmq:
-                condition: service_healthy
-            db:
-                condition: service_healthy
-        networks:
-            - undergroundvpn
-        volumes:
-            - ./vpn_gate_service:/app
+  celery-beat:
+    build: ./vpn_gate_service
+    command: celery -A celery_app.app beat --loglevel=info
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - undergroundvpn
+    volumes:
+      - ./vpn_gate_service:/app
 
 volumes:
-    postgres_data:
+  postgres_data:
 
 networks:
-    undergroundvpn:
-        external: true
+  undergroundvpn:
+    external: true

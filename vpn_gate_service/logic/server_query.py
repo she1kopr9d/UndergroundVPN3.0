@@ -39,6 +39,7 @@ async def create_config_url(
 async def create_config(
     create_data: schemas.config.CreateConfig,
     server_data: schemas.servers.ServerPublicInfo,
+    subscription_id: int | None = None,
 ) -> str:
     user_data = await database.io.telegram_user.get_telegram_user_data(
         user_id=create_data.user_id,
@@ -63,12 +64,14 @@ async def create_config(
         raise RuntimeError("cell server drop error")
     server_id = database.io.server.get_server_id_by_name(server_data.name)
     config_url = await create_config_url(user_uuid, user_email, server_data)
-    await database.io.config.create_config(
-        name=create_data.config_name,
-        uuid=str(user_uuid),
-        config=config_url,
-        server_id=server_id,
-        user_data=user_data,
+    config_obj: database.models.Config = (
+        await database.io.config.create_config(
+            name=create_data.config_name,
+            uuid=str(user_uuid),
+            config=config_url,
+            server_id=server_id,
+            user_data=user_data,
+        )
     )
     await database.io.server.add_user_in_config(
         str(user_uuid),
@@ -86,6 +89,15 @@ async def create_config(
             )
         ),
     )
+    if subscription_id is not None:
+        await database.io.base.update_field(
+            object_class=database.models.Subscription,
+            search_field=database.models.Subscription.id,
+            search_value=subscription_id,
+            update_list={
+                "external_id": config_obj.id,
+            },
+        )
     return config_url
 
 

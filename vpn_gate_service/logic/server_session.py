@@ -1,3 +1,4 @@
+import random
 import asyncio
 import time
 from typing import Dict, List, Tuple
@@ -33,6 +34,13 @@ def get_active_servers_dict() -> (
 
 
 def get_active_server(server_name: str):
+    return active_servers[server_name][0]
+
+
+def get_random_server():
+    if not active_servers:
+        return None
+    server_name = random.choice(list(active_servers.keys()))
     return active_servers[server_name][0]
 
 

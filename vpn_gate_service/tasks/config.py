@@ -13,10 +13,11 @@ async def create_config_task(data: dict):
     server: schemas.servers.ServerPublicInfo = (
         schemas.servers.ServerPublicInfo(**data["server"])
     )
-
+    subscription_id: int | None = data.get("subscription_id", None)
     config_url = await logic.server_query.create_config(
         create_data=user,
         server_data=server,
+        subscription_id=subscription_id,
     )
 
     await rabbit.broker.publish(

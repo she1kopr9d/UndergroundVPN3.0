@@ -11,7 +11,7 @@ async def create_config(
     config: str,
     server_id: int,
     user_data: schemas.telegram.UserAllData,
-) -> None:
+) -> database.models.Config:
     async with database.core.async_session_factory() as session:
         new_config = database.models.Config(
             name=name,
@@ -24,6 +24,7 @@ async def create_config(
         session.add(new_config)
         await session.commit()
         await session.refresh(new_config)
+        return new_config
 
 
 async def get_configs_with_pagination(
