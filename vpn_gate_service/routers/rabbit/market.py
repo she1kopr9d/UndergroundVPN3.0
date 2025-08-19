@@ -60,12 +60,10 @@ async def product_buy_handle(
             object_class=database.models.TelegramUser,
         )
     )
-    subscription: database.models.Subscription = (
-        await logic.sub.create_sub(
-            user_id=user.id,
-            product_id=data.product_id,
-            payment=payment,
-        )
+    subscription: database.models.Subscription = await logic.sub.create_sub(
+        user_id=user.id,
+        product_id=data.product_id,
+        payment=payment,
     )
     exec_product: database.models.ExecuteProduct = (
         await database.io.base.get_object_by_field(
@@ -75,9 +73,9 @@ async def product_buy_handle(
         )
     )
 
-    exec_obj: products_exec.abs.base.Product = (
-        products_exec.exec_list[exec_product.executor_name]()
-    )
+    exec_obj: products_exec.abs.base.Product = products_exec.exec_list[
+        exec_product.executor_name
+    ]()
     await exec_obj.create(
         user_id=data.user_id,
         subscription_id=subscription.id,

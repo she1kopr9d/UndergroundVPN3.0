@@ -179,11 +179,9 @@ async def withdrawal_payment(
             object_class=database.models.FinanceAccount,
         )
     )
-    product: database.models.Product = (
-        await database.io.base.get_object_by_id(
-            id=product_id,
-            object_class=database.models.Product,
-        )
+    product: database.models.Product = await database.io.base.get_object_by_id(
+        id=product_id,
+        object_class=database.models.Product,
     )
     payment: database.models.Payment = (
         await logic.payment_system.create_withdrawal_payment(

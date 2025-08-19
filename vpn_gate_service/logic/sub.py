@@ -8,11 +8,9 @@ async def create_sub(
     product_id: int,
     payment: database.models.Payment,
 ):
-    product: database.models.Product = (
-        await database.io.base.get_object_by_id(
-            id=product_id,
-            object_class=database.models.Product,
-        )
+    product: database.models.Product = await database.io.base.get_object_by_id(
+        id=product_id,
+        object_class=database.models.Product,
     )
     subscription: database.models.Subscription = (
         await database.io.sub.create_subscription_with_duration(

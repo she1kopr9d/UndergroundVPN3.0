@@ -71,3 +71,8 @@ class ReferralCommandData(pydantic.BaseModel):
 class PaymentMinInfo(pydantic.BaseModel):
     payment_id: int
     payment_method: str
+
+
+class MessageData(pydantic.BaseModel):
+    text: str | None
+    photo: str | None

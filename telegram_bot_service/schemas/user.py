@@ -63,3 +63,11 @@ class ReferralDepositInfo(
     UserIdANSW,
 ):
     amount: float
+
+
+class MessageData(
+    pydantic.BaseModel,
+):
+    user_id: int
+    text: str | None
+    photo: str | None

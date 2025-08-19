@@ -9,6 +9,7 @@ import handlers.market
 import handlers.menu
 import handlers.moderator
 import handlers.user
+import services.news.router
 import rabbit
 import subscribers.admin  # noqa
 import subscribers.moderator  # noqa
@@ -27,6 +28,7 @@ async def main():
         deps.dp.include_router(handlers.market.router)
         deps.dp.include_router(handlers.moderator.router)
         deps.dp.include_router(handlers.menu.router)
+        deps.dp.include_router(services.news.router.router)
         async with rabbit.broker:
             await rabbit.broker.start()
             await deps.dp.start_polling(deps.bot)

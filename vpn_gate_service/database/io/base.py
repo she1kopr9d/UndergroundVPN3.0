@@ -1,3 +1,4 @@
+import typing
 import database.core
 import database.models
 import sqlalchemy
@@ -72,3 +73,14 @@ async def update_field(
         await session.commit()
         await session.refresh(obj)
         return obj
+
+
+async def get_all_field_list(
+    object_class: type[database.models.Base],
+    field,
+) -> list[typing.Any]:
+    async with database.core.async_session_factory() as session:
+        stmt = sqlalchemy.select(field).select_from(object_class)
+        result = await session.execute(stmt)
+        values = result.scalars().all()
+        return list(values)

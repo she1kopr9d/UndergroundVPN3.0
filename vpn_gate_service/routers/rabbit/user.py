@@ -226,3 +226,24 @@ async def handle_add_handler(
         },
         queue="handle_add_answer",
     )
+
+
+@router.subscriber("send_new_news")
+async def send_new_news_handler(
+    data: schemas.telegram.MessageData,
+):
+    user_id_list: list[int] = (
+        await database.io.base.get_all_field_list(
+            object_class=database.models.TelegramUser,
+            field=database.models.TelegramUser.telegram_id,
+        )
+    )
+    for user_id in user_id_list:
+        await router.broker.publish(
+            {
+                "user_id": user_id,
+                "text": data.text,
+                "photo": data.photo,
+            },
+            queue="send_telegram_message",
+        )

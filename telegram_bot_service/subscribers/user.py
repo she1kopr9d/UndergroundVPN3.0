@@ -1,3 +1,4 @@
+import io
 import aiogram.fsm.context
 import content.config
 import content.deposite
@@ -309,3 +310,35 @@ async def error_withdrawal_payment_handler(
         text=content.deposite.ERROR_WITHDRAWAL_INFO(data),
         parse_mode="HTML",
     )
+
+
+@rabbit.broker.subscriber("send_telegram_message")
+async def send_telegram_message_handler(
+    data: schemas.user.MessageData,
+):
+    bot = await deps.get_bot()
+
+    user_id = data.user_id
+    text = data.text
+    photo = data.photo
+    try:
+        if photo:
+            file_bytes = data.photo.encode("latin1")
+            file_name_plug = "news.jpg"
+            file_like = io.BytesIO(file_bytes)
+            file_like.name = file_name_plug
+            photo = aiogram.types.BufferedInputFile(
+                file=file_like.getvalue(),
+                filename=file_name_plug,
+            )
+            await bot.send_photo(
+                chat_id=user_id,
+                photo=photo,
+                caption=text or "",
+            )
+        elif text:
+            await bot.send_message(chat_id=user_id, text=text)
+        else:
+            await bot.send_message(chat_id=user_id, text="(пустая новость)")
+    except Exception as e:
+        print(f"Не удалось отправить сообщение пользователю {user_id}: {e}")
