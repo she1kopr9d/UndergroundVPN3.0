@@ -1,10 +1,9 @@
 import celery_app
-
-import rabbit
 import database.io.base
 import database.io.sub
 import database.models
 import logic.sub
+import rabbit
 
 
 async def check_day_sub(

@@ -1,4 +1,5 @@
 import typing
+
 import database.core
 import database.models
 import sqlalchemy

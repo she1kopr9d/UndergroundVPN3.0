@@ -1,8 +1,8 @@
 import celery_app
 import logic.server_query
 import rabbit
-import schemas.servers
 import schemas.config
+import schemas.servers
 
 
 @celery_app.app.async_task_with_broker(name="tasks.create_config_task")

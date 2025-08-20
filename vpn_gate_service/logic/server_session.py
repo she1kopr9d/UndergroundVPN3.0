@@ -1,5 +1,5 @@
-import random
 import asyncio
+import random
 import time
 from typing import Dict, List, Tuple
 

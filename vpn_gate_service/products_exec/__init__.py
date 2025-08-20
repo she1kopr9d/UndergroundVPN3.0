@@ -1,6 +1,5 @@
 from products_exec.real.vpn_30_days import VPN_30_DAYS
 
-
 __all__ = ["VPN_30_DAYS"]
 
 exec_list = {

@@ -1,4 +1,3 @@
-import logic.payment_system
 import config
 import database.io.base
 import database.io.finance_account
@@ -6,6 +5,7 @@ import database.io.payments
 import database.models
 import faststream.rabbit.fastapi
 import logic.crypto_dep
+import logic.payment_system
 
 
 async def create_payment(
@@ -216,7 +216,7 @@ async def withdrawal_payment(
     else:
         await database.io.payments.update_payment_status(
             payment_id=payment.id,
-            new_status=database.models.PaymentStatus.failed
+            new_status=database.models.PaymentStatus.failed,
         )
         payment: database.models.Payment = (
             await database.io.base.get_object_by_id(

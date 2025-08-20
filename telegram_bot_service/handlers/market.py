@@ -1,10 +1,10 @@
 import aiogram
 import aiogram.filters
 import callback
+import keyboards
 import logic.list_menu
 import logic.menu
 import rabbit
-import keyboards
 
 router = aiogram.Router()
 

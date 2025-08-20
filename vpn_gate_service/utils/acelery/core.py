@@ -1,7 +1,8 @@
 import asyncio
-import celery
 import functools
-from typing import Callable, Any
+from typing import Any, Callable
+
+import celery
 
 
 class AsyncCelery(celery.Celery):

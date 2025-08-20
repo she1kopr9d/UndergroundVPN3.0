@@ -9,8 +9,8 @@ import handlers.market
 import handlers.menu
 import handlers.moderator
 import handlers.user
-import services.news.router
 import rabbit
+import services.news.router
 import subscribers.admin  # noqa
 import subscribers.moderator  # noqa
 import subscribers.user  # noqa

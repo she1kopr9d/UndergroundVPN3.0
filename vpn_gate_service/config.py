@@ -6,7 +6,6 @@ import settings.rabbitmq
 import settings.server
 import settings.xray
 
-
 celery = settings.celery.Settings()
 database = settings.database.Settings()
 payment = settings.payment.Settings()

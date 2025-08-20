@@ -1,15 +1,12 @@
 import aiogram
-import aiogram.types
 import aiogram.filters
 import aiogram.fsm.context
-
+import aiogram.types
 import filters.is_admin
 import rabbit
-
 import services.news.callbackdata
-import services.news.states
 import services.news.keyboards
-
+import services.news.states
 
 router = aiogram.Router()
 router.message.filter(filters.is_admin.IsAdminFilter())

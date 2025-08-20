@@ -1,17 +1,14 @@
 import random
 
+import database.io.base
+import database.models
+import logic.server_query
+import logic.server_session
 import products_exec.abs.base
-
+import rabbit
 import schemas.config
 import schemas.servers
-import logic.server_session
-import logic.server_query
 import tasks.config
-
-import database.models
-import database.io.base
-
-import rabbit
 
 
 class VPNProduct(products_exec.abs.base.Product):

@@ -8,11 +8,11 @@ import database.models
 import faststream.rabbit.fastapi
 import logic.payment_system
 import logic.sub
+import products_exec
+import products_exec.abs.base
 import schemas.deposit
 import schemas.product
 import schemas.telegram
-import products_exec
-import products_exec.abs.base
 
 router = faststream.rabbit.fastapi.RabbitRouter(config.rabbitmq.rabbitmq_url)
 

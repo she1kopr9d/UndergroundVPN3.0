@@ -1,6 +1,5 @@
 import aiogram.types
 import aiogram.utils.keyboard
-
 import services.news.callbackdata
 
 

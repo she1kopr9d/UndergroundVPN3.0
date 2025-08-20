@@ -1,9 +1,9 @@
-import utils.acelery
 import asyncio
-import celery
-import rabbit
 
+import celery
 import config
+import rabbit
+import utils.acelery
 
 # import rabbit
 
@@ -16,7 +16,6 @@ app = utils.acelery.AsyncCelery(
 )
 
 import tasks  # noqa
-
 
 app.conf.beat_schedule = {
     "check_5_day_sub": {
