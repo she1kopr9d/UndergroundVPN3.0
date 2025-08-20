@@ -215,6 +215,32 @@ async def conf_delete_handler(
     )
 
 
+@router.subscriber("delete_config")
+async def conf_delete_2_handler(
+    data: schemas.config.ConfigDelete,
+):
+    config_obj: database.models.Config = (
+        await database.io.base.get_object_by_id(
+            id=data.config_id,
+            object_class=database.models.Config,
+        )
+    )
+    server_obj: database.models.Server = (
+        await database.io.base.get_object_by_id(
+            id=config_obj.server_id,
+            object_class=database.models.Server,
+        )
+    )
+    server_data: schemas.servers.ServerPublicInfo = (
+        logic.server_session.get_active_server(server_obj.name)
+    )
+    await logic.server_query.delete_config(
+        data,
+        server_data,
+        config_obj,
+    )
+
+
 @router.subscriber("handle_add")
 async def handle_add_handler(
     data: schemas.telegram.UserData,
@@ -232,11 +258,9 @@ async def handle_add_handler(
 async def send_new_news_handler(
     data: schemas.telegram.MessageData,
 ):
-    user_id_list: list[int] = (
-        await database.io.base.get_all_field_list(
-            object_class=database.models.TelegramUser,
-            field=database.models.TelegramUser.telegram_id,
-        )
+    user_id_list: list[int] = await database.io.base.get_all_field_list(
+        object_class=database.models.TelegramUser,
+        field=database.models.TelegramUser.telegram_id,
     )
     for user_id in user_id_list:
         await router.broker.publish(

@@ -143,6 +143,14 @@ async def execute_withdrawal_payment(
     finance_account: database.models.FinanceAccount,
 ) -> database.models.FinanceAccount:
     if payment.status.value != database.models.PaymentStatus.pending.value:
+        await database.io.base.update_field(
+            object_class=database.models.Payment,
+            search_field=database.models.Payment.id,
+            search_value=payment.id,
+            update_list={
+                "status": database.models.PaymentStatus.failed,
+            },
+        )
         raise Exception("Payment has not valid status for withdrawal")
     finance_account = await database.io.finance_account.withdrawal_on_balance(
         finance_account_id=finance_account.id,
@@ -206,6 +214,16 @@ async def withdrawal_payment(
             queue="execute_withdrawal_payment",
         )
     else:
+        await database.io.payments.update_payment_status(
+            payment_id=payment.id,
+            new_status=database.models.PaymentStatus.failed
+        )
+        payment: database.models.Payment = (
+            await database.io.base.get_object_by_id(
+                id=payment.id,
+                object_class=database.models.Payment,
+            )
+        )
         await broker.publish(
             {
                 "user_id": user_id,
@@ -215,4 +233,8 @@ async def withdrawal_payment(
             },
             queue="error_withdrawal_payment",
         )
+    payment: database.models.Payment = await database.io.base.get_object_by_id(
+        id=payment.id,
+        object_class=database.models.Payment,
+    )
     return payment

@@ -17,3 +17,8 @@ class ConfigGetInfo(pydantic.BaseModel):
     message_id: int
     config_id: int
     now_page: int
+
+
+class ConfigDelete(pydantic.BaseModel):
+    user_id: int
+    config_id: int

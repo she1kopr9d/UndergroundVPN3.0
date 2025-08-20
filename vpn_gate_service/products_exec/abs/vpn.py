@@ -3,11 +3,15 @@ import random
 import products_exec.abs.base
 
 import schemas.config
+import schemas.servers
 import logic.server_session
+import logic.server_query
 import tasks.config
 
 import database.models
 import database.io.base
+
+import rabbit
 
 
 class VPNProduct(products_exec.abs.base.Product):
@@ -43,4 +47,19 @@ class VPNProduct(products_exec.abs.base.Product):
                 "server": server.dict(),
                 "subscription_id": subscription_id,
             }
+        )
+
+    async def remove(self, user_id: int, subscription_id: int):
+        subscription: database.models.Subscription = (
+            await database.io.base.get_object_by_id(
+                id=subscription_id,
+                object_class=database.models.Subscription,
+            )
+        )
+        await rabbit.broker.publish(
+            schemas.config.ConfigDelete(
+                user_id=user_id,
+                config_id=int(subscription.external_id),
+            ).dict(),
+            queue="delete_config",
         )

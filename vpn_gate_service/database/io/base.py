@@ -84,3 +84,17 @@ async def get_all_field_list(
         result = await session.execute(stmt)
         values = result.scalars().all()
         return list(values)
+
+
+async def get_values_by_field_list(
+    search_field,
+    values_fields: list[typing.Any],
+    get_values_field,
+) -> list[typing.Any]:
+    async with database.core.async_session_factory() as session:
+        stmt = sqlalchemy.select(get_values_field).where(
+            search_field.in_(values_fields)
+        )
+        result = await session.execute(stmt)
+        values = result.scalars().all()
+        return list(values)

@@ -94,6 +94,41 @@ async def get_subscriptions_expiring_in(days: int) -> list[int]:
         return subscription_ids
 
 
+async def get_subscriptions_expiring_between(
+    days_from: int, days_to: int
+) -> list[int]:
+    async with database.core.async_session_factory() as session:
+        now = datetime.datetime.utcnow()
+        start = now + datetime.timedelta(days=days_from)
+        end = now + datetime.timedelta(days=days_to)
+
+        result = await session.execute(
+            sqlalchemy.select(database.models.Subscription.id).where(
+                database.models.Subscription.status
+                == database.models.SubscriptionStatus.active,
+                database.models.Subscription.end_date > start,
+                database.models.Subscription.end_date <= end,
+            )
+        )
+        subscription_ids = [row[0] for row in result.all()]
+        return subscription_ids
+
+
+async def get_expired_active_subscriptions() -> list[int]:
+    async with database.core.async_session_factory() as session:
+        now = datetime.datetime.utcnow()
+
+        result = await session.execute(
+            sqlalchemy.select(database.models.Subscription.id).where(
+                database.models.Subscription.status
+                == database.models.SubscriptionStatus.active,
+                database.models.Subscription.end_date <= now,
+            )
+        )
+        subscription_ids = [row[0] for row in result.all()]
+        return subscription_ids
+
+
 async def set_subscription_inactive(
     subscription_id: int,
     status: database.models.SubscriptionStatus = (

@@ -33,17 +33,16 @@ async def create_payment(
 async def update_payment_status(
     payment_id: int,
     new_status: database.models.PaymentStatus,
-) -> bool:
+) -> None:
     async with database.core.async_session_factory() as session:
         stmt = (
             sqlalchemy.update(database.models.Payment)
             .where(database.models.Payment.id == payment_id)
             .values(status=new_status)
+            .returning(database.models.Payment)
         )
-
         result = await session.execute(stmt)
         await session.commit()
-        return result.rowcount > 0
 
 
 async def get_moderation_payments_with_pagination(

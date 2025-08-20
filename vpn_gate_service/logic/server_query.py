@@ -102,7 +102,7 @@ async def create_config(
 
 
 async def delete_config(
-    data: schemas.config.ConfigGetInfo,
+    data: schemas.config.ConfigDelete,
     server_data: schemas.servers.ServerPublicInfo,
     config_obj: database.models.Config,
 ):

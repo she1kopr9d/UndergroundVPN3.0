@@ -17,3 +17,6 @@ uvicorn
 httpx
 aiocryptopay
 celery
+# aio-celery
+# asgiref
+# celery-pool-asyncio
