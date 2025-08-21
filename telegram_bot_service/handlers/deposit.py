@@ -82,18 +82,28 @@ async def check_valid_amount_handler(
             ),
         )
     else:
-        await state.clear()
-        await logic.payments.create_payment(
-            user_id=data["user_id"],
-            message_id=data["message_id"],
-            amount=int(text),
-            method=data["method"],
-        )
-        await message.bot.edit_message_text(
-            chat_id=data["user_id"],
-            message_id=data["message_id"],
-            text=("Загрузка..."),
-        )
+        if int(text) > 100000:
+            await message.bot.edit_message_text(
+                chat_id=data["user_id"],
+                message_id=data["message_id"],
+                text=(
+                    "Вы ввели число больше 100000 рублей\n"
+                    "Введите число пополнения в РУБЛЯХ!"
+                ),
+            )
+        else:
+            await state.clear()
+            await logic.payments.create_payment(
+                user_id=data["user_id"],
+                message_id=data["message_id"],
+                amount=int(text),
+                method=data["method"],
+            )
+            await message.bot.edit_message_text(
+                chat_id=data["user_id"],
+                message_id=data["message_id"],
+                text=("Загрузка..."),
+            )
 
 
 @router.callback_query(

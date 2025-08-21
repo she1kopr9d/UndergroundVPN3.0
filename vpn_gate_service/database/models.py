@@ -45,6 +45,12 @@ class TelegramUser(Base):
         nullable=False,
         server_default=sqlalchemy.false(),
     )
+    is_friend = sqlalchemy.Column(
+        sqlalchemy.Boolean,
+        default=False,
+        nullable=False,
+        server_default=sqlalchemy.false(),
+    )
     username = sqlalchemy.Column(sqlalchemy.String)
     created_at: sqlalchemy.orm.Mapped[created_at]
     updated_at: sqlalchemy.orm.Mapped[updated_at]
@@ -319,6 +325,12 @@ class Product(Base):
         sqlalchemy.Enum(ProductType),
         default=ProductType.recurring,
         nullable=False,
+    )
+    is_friend = sqlalchemy.Column(
+        sqlalchemy.Boolean,
+        default=False,
+        nullable=False,
+        server_default=sqlalchemy.false(),
     )
 
     created_at: sqlalchemy.orm.Mapped[created_at]

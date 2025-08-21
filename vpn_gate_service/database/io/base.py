@@ -56,6 +56,20 @@ async def get_all_objects(
         return objects
 
 
+async def get_all_objects_with_filter(
+    object_class: type[database.models.Base],
+    filters: dict[str, typing.Any] | None = None,
+) -> list[database.models.Base] | None:
+    async with database.core.async_session_factory() as session:
+        stmt = sqlalchemy.select(object_class)
+        if filters:
+            for field, value in filters.items():
+                stmt = stmt.where(getattr(object_class, field) == value)
+        result = await session.execute(stmt)
+        objects = result.scalars().all()
+        return objects
+
+
 async def update_field(
     object_class: type[database.models.Base],
     search_field,

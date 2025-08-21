@@ -127,9 +127,17 @@ async def conf_command_handler(data: schemas.telegram.RefPage):
 
 @router.subscriber("market_command")
 async def market_command_handler(data: schemas.telegram.MarketPage):
+    user: database.models.TelegramUser = (
+        await database.io.base.get_object_by_field(
+            field=database.models.TelegramUser.telegram_id,
+            value=data.user_id,
+            object_class=database.models.TelegramUser,
+        )
+    )
     products, max_page = (
-        await database.io.products.get_products_with_pagination(
+        await database.io.products.get_products_with_pagination_f(
             data,
+            is_friend=user.is_friend,
         )
     )
     await router.broker.publish(
