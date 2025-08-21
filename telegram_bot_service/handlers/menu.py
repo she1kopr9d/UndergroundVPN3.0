@@ -4,6 +4,7 @@ import aiogram.types
 import callback
 import logic.list_menu
 import logic.menu
+import content.user
 
 router: aiogram.Router = aiogram.Router()
 
@@ -92,4 +93,22 @@ async def deposit_menu(
         user_id=callback_data.user_id,
         message_id=callback_data.message_id,
         bot=bot,
+    )
+
+
+@router.callback_query(
+    callback.MainMenuCallBack.filter(
+        aiogram.F.action == "app",
+    )
+)
+async def app_menu(
+    query: aiogram.types.CallbackQuery,
+    callback_data: callback.MainMenuCallBack,
+    bot: aiogram.Bot,
+    state: aiogram.fsm.context.FSMContext,
+):
+    await state.clear()
+    await query.message.answer(
+        text=content.user.APP_COMMAND(),
+        parse_mode="HTML",
     )

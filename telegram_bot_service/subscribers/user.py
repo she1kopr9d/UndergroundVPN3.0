@@ -119,11 +119,16 @@ async def conf_info_command_handler(
 ):
     bot = await deps.get_bot()
 
+    kb = (
+        keyboards.build_config_info_keyboard
+        if data.end_date is None
+        else keyboards.build_sub_config_info_keyboard
+    )
     await bot.edit_message_text(
         chat_id=data.user_id,
         message_id=data.message_id,
         text=content.config.CONFIG_INFO(data),
-        reply_markup=keyboards.build_config_info_keyboard(data),
+        reply_markup=kb(data),
         parse_mode="Markdown",
     )
 

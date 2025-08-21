@@ -73,3 +73,13 @@ async def check_desub():
     )
     for sub_id in subs_ids:
         await logic.sub.update_sub(sub_id)
+
+
+@celery_app.app.async_task_with_broker(name="tasks.deactivate_sub")
+async def deactivate_sub():
+    print("[PEREODIC TASK] deactivate_sub")
+    subs_ids: list[int] = await database.io.sub.get_expired_subscriptions(
+        status=database.models.SubscriptionStatus.canceled,
+    )
+    for sub_id in subs_ids:
+        await logic.sub.remove_sub(sub_id)

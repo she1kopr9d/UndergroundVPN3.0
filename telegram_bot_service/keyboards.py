@@ -227,7 +227,56 @@ def build_delete_accept_keyboard(
     data: callback.ConfigCallback,
 ) -> aiogram.types.InlineKeyboardMarkup:
     inline_keyboard = []
-    for text, action in [("Отмена", "open"), ("Удалить", "delete_2")]:
+    for text, action in [
+        ("Отменять", "open"),
+        ("Удалить", "delete_2"),
+    ]:
+        inline_keyboard.append(
+            [
+                build_config_button(
+                    text,
+                    action,
+                    data.config_id,
+                    data.user_id,
+                    data.page,
+                    data.message_id,
+                )
+            ]
+        )
+    return aiogram.types.InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
+
+
+def build_sub_config_info_keyboard(
+    data: schemas.config.ConfigInfoANSW,
+) -> aiogram.types.InlineKeyboardMarkup:
+    inline_keyboard = []
+    for text, action in [
+        ("Отменить подписку", "cancel_1"),
+        ("Назад", "back"),
+    ]:
+        inline_keyboard.append(
+            [
+                build_config_button(
+                    text,
+                    action,
+                    data.config_id,
+                    data.user_id,
+                    data.now_page,
+                    data.message_id,
+                )
+            ]
+        )
+    return aiogram.types.InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
+
+
+def build_cancel_accept_keyboard(
+    data: callback.ConfigCallback,
+) -> aiogram.types.InlineKeyboardMarkup:
+    inline_keyboard = []
+    for text, action in [
+        ("Не отменять", "open"),
+        ("Точно отменить", "cancel_2"),
+    ]:
         inline_keyboard.append(
             [
                 build_config_button(
@@ -433,6 +482,7 @@ def build_main_menu_keyboard(
             ("Пополнить баланс", "dep"),
             ("Конфиги", "conf"),
             ("К покупкам", "buy"),
+            ("Cсылки на приложения", "app"),
         ]
     ]
     return aiogram.types.InlineKeyboardMarkup(inline_keyboard=inline_keyboard)

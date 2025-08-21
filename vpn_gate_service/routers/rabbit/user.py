@@ -4,6 +4,7 @@ import database.io.config
 import database.io.finance_account
 import database.io.products
 import database.io.referrals
+import database.io.sub
 import database.io.telegram_user
 import database.models
 import faststream.rabbit.fastapi
@@ -167,6 +168,16 @@ async def conf_info_handler(
         user_email=logic.server_query.get_user_email(config_obj.name),
         server_data=server_data,
     )
+    sub: database.models.Subscription = (
+        await database.io.base.get_object_by_field(
+            field=database.models.Subscription.external_id,
+            value=config_obj.id,
+            object_class=database.models.Subscription,
+        )
+    )
+    end_date = None
+    if sub is not None:
+        end_date = sub.end_date
     await router.broker.publish(
         {
             "user_id": data.user_id,
@@ -177,6 +188,7 @@ async def conf_info_handler(
             "server_id": server_obj.id,
             "server_name": server_obj.name,
             "now_page": data.now_page,
+            "end_date": end_date,
         },
         queue="conf_info_command_answer",
     )
@@ -206,6 +218,73 @@ async def conf_delete_handler(
         server_data,
         config_obj,
     )
+    await router.broker.publish(
+        {
+            "user_id": data.user_id,
+            "message_id": data.message_id,
+        },
+        queue="delete_config_command_answer",
+    )
+
+
+@router.subscriber("cancel_config_command")
+async def conf_cancel_handler(
+    data: schemas.config.ConfigGetInfo,
+):
+    # config_obj: database.models.Config = (
+    #     await database.io.base.get_object_by_id(
+    #         id=data.config_id,
+    #         object_class=database.models.Config,
+    #     )
+    # )
+    # server_obj: database.models.Server = (
+    #     await database.io.base.get_object_by_id(
+    #         id=config_obj.server_id,
+    #         object_class=database.models.Server,
+    #     )
+    # )
+    # server_data: schemas.servers.ServerPublicInfo = (
+    #     logic.server_session.get_active_server(server_obj.name)
+    # )
+    # await logic.server_query.delete_config(
+    #     data,
+    #     server_data,
+    #     config_obj,
+    # )
+    sub: database.models.Subscription = (
+        await database.io.base.get_object_by_field(
+            field=database.models.Subscription.external_id,
+            value=data.config_id,
+            object_class=database.models.Subscription,
+        )
+    )
+    if sub is not None:
+        match sub.status.value:
+            case database.models.SubscriptionStatus.active.value:
+                await database.io.sub.set_subscription_inactive(
+                    subscription_id=sub.id,
+                    status=database.models.SubscriptionStatus.canceled,
+                )
+                await router.broker.publish(
+                    {
+                        "user_id": data.user_id,
+                        "text": (
+                            "Подписка отменена, когда дата "
+                            "продления настанет, конфиг удалится"
+                        ),
+                        "photo": None,
+                    },
+                    queue="send_telegram_message",
+                )
+            case database.models.SubscriptionStatus.canceled.value:
+                await router.broker.publish(
+                    {
+                        "user_id": data.user_id,
+                        "text": "Вы уже и так отменили подписку!",
+                        "photo": None,
+                    },
+                    queue="send_telegram_message",
+                )
     await router.broker.publish(
         {
             "user_id": data.user_id,

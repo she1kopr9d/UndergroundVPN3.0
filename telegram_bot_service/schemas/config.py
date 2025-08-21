@@ -1,3 +1,4 @@
+import datetime
 import typing
 
 import pydantic
@@ -24,3 +25,4 @@ class ConfigInfoANSW(pydantic.BaseModel):
     server_id: int
     server_name: str
     now_page: int
+    end_date: datetime.datetime | None

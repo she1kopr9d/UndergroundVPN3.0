@@ -1,12 +1,6 @@
-import asyncio
-
-import celery
 import config
 import rabbit
 import utils.acelery
-
-# import rabbit
-
 
 app = utils.acelery.AsyncCelery(
     "worker",
@@ -28,6 +22,10 @@ app.conf.beat_schedule = {
     },
     "check_desub": {
         "task": "tasks.check_desub",
+        "schedule": 10.0,
+    },
+    "deactivate_sub": {
+        "task": "tasks.deactivate_sub",
         "schedule": 10.0,
     },
 }

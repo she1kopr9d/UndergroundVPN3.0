@@ -59,6 +59,14 @@ async def handle_help_command(message: aiogram.types.Message):
     )
 
 
+@router.message(aiogram.filters.Command("app"))
+async def handle_app_command(message: aiogram.types.Message):
+    await message.answer(
+        text=content.user.APP_COMMAND(),
+        parse_mode="HTML",
+    )
+
+
 @router.message(aiogram.filters.Command("profile"))
 async def handle_profile_command(message: aiogram.types.Message):
     await logic.menu.profile_menu_request(
@@ -149,6 +157,39 @@ async def conf_user_back_query(
             "message_id": callback_data.message_id,
         },
         queue="conf_command",
+    )
+
+
+@router.callback_query(
+    callback.ConfigCallback.filter(aiogram.F.action == "cancel_1")
+)
+async def conf_user_cancel_1_query(
+    query: aiogram.types.CallbackQuery,
+    callback_data: callback.ConfigCallback,
+):
+    await query.bot.edit_message_text(
+        chat_id=callback_data.user_id,
+        message_id=callback_data.message_id,
+        text=content.config.CONFIG_CANCEL_QUESTION(),
+        reply_markup=keyboards.build_cancel_accept_keyboard(callback_data),
+    )
+
+
+@router.callback_query(
+    callback.ConfigCallback.filter(aiogram.F.action == "cancel_2")
+)
+async def conf_user_cancel_2_query(
+    query: aiogram.types.CallbackQuery,
+    callback_data: callback.ConfigCallback,
+):
+    await rabbit.broker.publish(
+        {
+            "user_id": callback_data.user_id,
+            "config_id": callback_data.config_id,
+            "message_id": callback_data.message_id,
+            "now_page": callback_data.page,
+        },
+        queue="cancel_config_command",
     )
 
 

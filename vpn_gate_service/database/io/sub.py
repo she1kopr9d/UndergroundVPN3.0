@@ -114,19 +114,26 @@ async def get_subscriptions_expiring_between(
         return subscription_ids
 
 
-async def get_expired_active_subscriptions() -> list[int]:
+async def get_expired_subscriptions(
+    status,
+) -> list[int]:
     async with database.core.async_session_factory() as session:
         now = datetime.datetime.utcnow()
 
         result = await session.execute(
             sqlalchemy.select(database.models.Subscription.id).where(
-                database.models.Subscription.status
-                == database.models.SubscriptionStatus.active,
+                database.models.Subscription.status == status,
                 database.models.Subscription.end_date <= now,
             )
         )
         subscription_ids = [row[0] for row in result.all()]
         return subscription_ids
+
+
+async def get_expired_active_subscriptions() -> list[int]:
+    return await get_expired_subscriptions(
+        status=database.models.SubscriptionStatus.active
+    )
 
 
 async def set_subscription_inactive(

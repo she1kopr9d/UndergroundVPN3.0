@@ -61,6 +61,7 @@ def HELP_COMMAND() -> str:
 <b>Общее</b>
 /start - запуск пользования ботом
 /help - отображение команд с пояснением
+/app - скидывает ссылки для установки
 
 <b>Профиль</b>
 /profile - выводит ваш профиль с данными
@@ -69,10 +70,23 @@ def HELP_COMMAND() -> str:
 
 <b>Конфиги</b>
 /conf - выводит вам все ваши конфиги
-/new_conf - для создания нового конфига
 
 <b>Платежи</b>
 /payment - выводит меню для пополнения баланса
+"""
+
+
+def APP_COMMAND() -> str:
+    return """
+<b>Ссылки на приложения под разные платформы</b>
+
+<a href="https://play.google.com/store/apps/details?id=com.v2raytun.android">Андройд</a>
+
+<a href="https://apps.apple.com/en/app/v2raytun/id6476628951">IOS</a>
+
+<a href="https://v2raytun-install.ru/v2RayTun_Setup.exe">Windows</a>
+
+<a href="https://apps.apple.com/en/app/v2raytun/id6476628951">MacOS</a>
 """
 
 
