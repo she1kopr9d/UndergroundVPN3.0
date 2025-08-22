@@ -1,1 +1,179 @@
-{"log": {"loglevel": "warning"}, "inbounds": [{"port": 44344, "protocol": "vless", "settings": {"clients": [{"id": "cbabcd4b-1585-4f44-9f87-3a2e888c19c8", "flow": "xtls-rprx-vision", "level": 0, "email": "admin_init@xray"}, {"email": "she1kopr9d-1@user.id", "id": "b5f1932c-af36-4df0-8780-c7e662e7e064", "flow": "xtls-rprx-vision", "level": 0}, {"email": "she1kopr9d-2@user.id", "id": "d51d540c-bbf1-4f97-a456-915f2b2548c4", "flow": "xtls-rprx-vision", "level": 0}, {"email": "test@user.id", "id": "e4e685e5-075b-457b-9dbe-7d50c3c71d2a", "flow": "xtls-rprx-vision", "level": 0}, {"email": "test2@user.id", "id": "a7056b3c-b7c5-486d-ba2e-5c2868021703", "flow": "xtls-rprx-vision", "level": 0}, {"email": "biletskaya-1@user.id", "id": "266573dc-8968-45b3-9793-60bbd8aa2bfb", "flow": "xtls-rprx-vision", "level": 0}, {"email": "admin-1@user.id", "id": "3b5d3b51-affe-4dca-8691-ce166975a952", "flow": "xtls-rprx-vision", "level": 0}, {"email": "ARGSENTINEL-1@user.id", "id": "5104fcc1-d9fa-4b12-8dbf-05fdcc2dc62f", "flow": "xtls-rprx-vision", "level": 0}, {"email": "vlxdislxve-1@user.id", "id": "d39d9d9e-f627-430a-938f-d1360834b6cd", "flow": "xtls-rprx-vision", "level": 0}, {"email": "@Ktololp@user.id", "id": "594625e6-06f4-4985-8355-df240b401f0a", "flow": "xtls-rprx-vision", "level": 0}, {"email": "tolstbb-1@user.id", "id": "4a3a433d-ecab-4ab1-b6ce-ad708a860502", "flow": "xtls-rprx-vision", "level": 0}, {"email": "OgPiSs1-1@user.id", "id": "5aa72e79-9617-46c2-b83b-0dd377ac46b3", "flow": "xtls-rprx-vision", "level": 0}, {"email": "admin-android-1@user.id", "id": "fb578fe9-3f66-43a5-8af1-b96e5a1a8b8f", "flow": "xtls-rprx-vision", "level": 0}, {"email": "Baksik2024-1@user.id", "id": "547bb042-6fdf-441e-a9ac-958dcd7d0e6a", "flow": "xtls-rprx-vision", "level": 0}, {"email": "mid_lyn-1@user.id", "id": "850b94f9-1833-4004-a5eb-dae7e94f4fdf", "flow": "xtls-rprx-vision", "level": 0}, {"email": "Tlufier-1@user.id", "id": "8e7f4c35-719f-462a-a866-0165d0c4b1f5", "flow": "xtls-rprx-vision", "level": 0}, {"email": "diba-1@user.id", "id": "28ab93da-07b9-4246-ae33-23ada047d6cc", "flow": "xtls-rprx-vision", "level": 0}, {"email": "diba-2@user.id", "id": "64a9c74f-11df-46b6-978e-d066914bb77b", "flow": "xtls-rprx-vision", "level": 0}, {"email": "diba-3@user.id", "id": "8af42c62-4e4b-4070-805e-a768ead4d3ab", "flow": "xtls-rprx-vision", "level": 0}, {"email": "dima-1@user.id", "id": "69cabc29-51db-42d7-a30b-385df8eff1d9", "flow": "xtls-rprx-vision", "level": 0}, {"email": "dobri-1@user.id", "id": "ae89586e-cf48-4c95-b225-a1f2ea41faeb", "flow": "xtls-rprx-vision", "level": 0}, {"email": "dima-ref-1-1@user.id", "id": "7f94f012-6606-483f-8a4f-7f205f10f6cb", "flow": "xtls-rprx-vision", "level": 0}, {"email": "biletskaya-2@user.id", "id": "7835aa7f-8fda-49b0-a69c-40e6a9eb6e06", "flow": "xtls-rprx-vision", "level": 0}, {"email": "bad_sop1ay-1@user.id", "id": "cc19a79c-79a6-499b-abe2-064e28aec4fb", "flow": "xtls-rprx-vision", "level": 0}, {"email": "dliaelki-1@user.id", "id": "f3d89ba2-f156-4b09-8313-154556249f4b", "flow": "xtls-rprx-vision", "level": 0}, {"email": "bad-sop1ay-1@user.id", "id": "b7be1772-dc00-4ac8-a2b4-987bab365d35", "flow": "xtls-rprx-vision", "level": 0}, {"email": "sosunok-1@user.id", "id": "1fee2afa-2bd3-4d0b-b0b6-e08954295386", "flow": "xtls-rprx-vision", "level": 0}, {"email": "jelyfishron-1@user.id", "id": "6e63fd66-93b7-4ab9-bc81-727b4fc4ba52", "flow": "xtls-rprx-vision", "level": 0}, {"email": "kultyschev10-1@user.id", "id": "4102341a-d670-49f9-b511-01c787a6e51f", "flow": "xtls-rprx-vision", "level": 0}, {"email": "she1kopr9d-5D45@user.id", "id": "dd505741-803b-409f-8913-e8a5bdc055ab", "flow": "xtls-rprx-vision", "level": 0}, {"email": "she1kopr9d-54B0@user.id", "id": "9bf0cbe9-99ae-49c2-9802-16630268dc55", "flow": "xtls-rprx-vision", "level": 0}, {"email": "she1kopr9d-8416@user.id", "id": "148ec5af-dc42-4aca-a3a9-4d654ed8ff71", "flow": "xtls-rprx-vision", "level": 0}, {"email": "danyaxe-421C@user.id", "id": "37882450-f1fa-427a-8300-13719c65f15e", "flow": "xtls-rprx-vision", "level": 0}, {"email": "she1kopr9d-C203@user.id", "id": "b647d2ff-012d-4b45-bcec-a4b8cab3048b", "flow": "xtls-rprx-vision", "level": 0}, {"email": "she1kopr9d-A2DE@user.id", "id": "bb4a7ba4-b8b7-4b20-b571-4aaf1f3eb3e9", "flow": "xtls-rprx-vision", "level": 0}], "decryption": "none"}, "streamSettings": {"network": "tcp", "security": "reality", "realitySettings": {"show": false, "dest": "www.cloudflare.com:443", "xver": 0, "serverNames": ["www.cloudflare.com"], "privateKey": "0NQ5SMrEcfaniH7Sn1NC16lwVkXuSK2FbR38gYWsA0Q", "shortIds": ["12345678"]}}}], "outbounds": [{"protocol": "freedom"}, {"protocol": "blackhole", "settings": {}, "tag": "blocked"}], "routing": {"rules": [{"type": "field", "ip": ["geoip:private"], "outboundTag": "blocked"}]}}
+{
+  "clients": [
+    {
+      "id": "cbabcd4b-1585-4f44-9f87-3a2e888c19c8",
+      "flow": "xtls-rprx-vision",
+      "level": 0,
+      "email": "admin_init@xray"
+    },
+    {
+      "email": "she1kopr9d-1@user.id",
+      "id": "b5f1932c-af36-4df0-8780-c7e662e7e064",
+      "flow": "xtls-rprx-vision",
+      "level": 0
+    },
+    {
+      "email": "she1kopr9d-2@user.id",
+      "id": "d51d540c-bbf1-4f97-a456-915f2b2548c4",
+      "flow": "xtls-rprx-vision",
+      "level": 0
+    },
+    {
+      "email": "test@user.id",
+      "id": "e4e685e5-075b-457b-9dbe-7d50c3c71d2a",
+      "flow": "xtls-rprx-vision",
+      "level": 0
+    },
+    {
+      "email": "test2@user.id",
+      "id": "a7056b3c-b7c5-486d-ba2e-5c2868021703",
+      "flow": "xtls-rprx-vision",
+      "level": 0
+    },
+    {
+      "email": "biletskaya-1@user.id",
+      "id": "266573dc-8968-45b3-9793-60bbd8aa2bfb",
+      "flow": "xtls-rprx-vision",
+      "level": 0
+    },
+    {
+      "email": "admin-1@user.id",
+      "id": "3b5d3b51-affe-4dca-8691-ce166975a952",
+      "flow": "xtls-rprx-vision",
+      "level": 0
+    },
+    {
+      "email": "ARGSENTINEL-1@user.id",
+      "id": "5104fcc1-d9fa-4b12-8dbf-05fdcc2dc62f",
+      "flow": "xtls-rprx-vision",
+      "level": 0
+    },
+    {
+      "email": "vlxdislxve-1@user.id",
+      "id": "d39d9d9e-f627-430a-938f-d1360834b6cd",
+      "flow": "xtls-rprx-vision",
+      "level": 0
+    },
+    {
+      "email": "@Ktololp@user.id",
+      "id": "594625e6-06f4-4985-8355-df240b401f0a",
+      "flow": "xtls-rprx-vision",
+      "level": 0
+    },
+    {
+      "email": "tolstbb-1@user.id",
+      "id": "4a3a433d-ecab-4ab1-b6ce-ad708a860502",
+      "flow": "xtls-rprx-vision",
+      "level": 0
+    },
+    {
+      "email": "OgPiSs1-1@user.id",
+      "id": "5aa72e79-9617-46c2-b83b-0dd377ac46b3",
+      "flow": "xtls-rprx-vision",
+      "level": 0
+    },
+    {
+      "email": "admin-android-1@user.id",
+      "id": "fb578fe9-3f66-43a5-8af1-b96e5a1a8b8f",
+      "flow": "xtls-rprx-vision",
+      "level": 0
+    },
+    {
+      "email": "Baksik2024-1@user.id",
+      "id": "547bb042-6fdf-441e-a9ac-958dcd7d0e6a",
+      "flow": "xtls-rprx-vision",
+      "level": 0
+    },
+    {
+      "email": "mid_lyn-1@user.id",
+      "id": "850b94f9-1833-4004-a5eb-dae7e94f4fdf",
+      "flow": "xtls-rprx-vision",
+      "level": 0
+    },
+    {
+      "email": "Tlufier-1@user.id",
+      "id": "8e7f4c35-719f-462a-a866-0165d0c4b1f5",
+      "flow": "xtls-rprx-vision",
+      "level": 0
+    },
+    {
+      "email": "diba-1@user.id",
+      "id": "28ab93da-07b9-4246-ae33-23ada047d6cc",
+      "flow": "xtls-rprx-vision",
+      "level": 0
+    },
+    {
+      "email": "diba-2@user.id",
+      "id": "64a9c74f-11df-46b6-978e-d066914bb77b",
+      "flow": "xtls-rprx-vision",
+      "level": 0
+    },
+    {
+      "email": "diba-3@user.id",
+      "id": "8af42c62-4e4b-4070-805e-a768ead4d3ab",
+      "flow": "xtls-rprx-vision",
+      "level": 0
+    },
+    {
+      "email": "dima-1@user.id",
+      "id": "69cabc29-51db-42d7-a30b-385df8eff1d9",
+      "flow": "xtls-rprx-vision",
+      "level": 0
+    },
+    {
+      "email": "dobri-1@user.id",
+      "id": "ae89586e-cf48-4c95-b225-a1f2ea41faeb",
+      "flow": "xtls-rprx-vision",
+      "level": 0
+    },
+    {
+      "email": "dima-ref-1-1@user.id",
+      "id": "7f94f012-6606-483f-8a4f-7f205f10f6cb",
+      "flow": "xtls-rprx-vision",
+      "level": 0
+    },
+    {
+      "email": "biletskaya-2@user.id",
+      "id": "7835aa7f-8fda-49b0-a69c-40e6a9eb6e06",
+      "flow": "xtls-rprx-vision",
+      "level": 0
+    },
+    {
+      "email": "bad_sop1ay-1@user.id",
+      "id": "cc19a79c-79a6-499b-abe2-064e28aec4fb",
+      "flow": "xtls-rprx-vision",
+      "level": 0
+    },
+    {
+      "email": "dliaelki-1@user.id",
+      "id": "f3d89ba2-f156-4b09-8313-154556249f4b",
+      "flow": "xtls-rprx-vision",
+      "level": 0
+    },
+    {
+      "email": "bad-sop1ay-1@user.id",
+      "id": "b7be1772-dc00-4ac8-a2b4-987bab365d35",
+      "flow": "xtls-rprx-vision",
+      "level": 0
+    },
+    {
+      "email": "sosunok-1@user.id",
+      "id": "1fee2afa-2bd3-4d0b-b0b6-e08954295386",
+      "flow": "xtls-rprx-vision",
+      "level": 0
+    },
+    {
+      "email": "jelyfishron-1@user.id",
+      "id": "6e63fd66-93b7-4ab9-bc81-727b4fc4ba52",
+      "flow": "xtls-rprx-vision",
+      "level": 0
+    },
+    {
+      "email": "kultyschev10-1@user.id",
+      "id": "4102341a-d670-49f9-b511-01c787a6e51f",
+      "flow": "xtls-rprx-vision",
+      "level": 0
+    }
+  ],
+  "decryption": "none"
+}

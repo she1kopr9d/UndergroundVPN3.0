@@ -16,6 +16,5 @@ async def add_config_router(data: schemas.ConfigEditInfo):
 @router.post("/user/remove")
 async def remove_config_router(data: schemas.ConfigEditInfo):
     config_obj = xray.load_config()
-    status = xray.remove_user_from_config(data.client_data, config_obj)
-    xray.save_config(config_obj)
+    status = xray.remove_user_from_config(data, config_obj)
     return {"status": status}

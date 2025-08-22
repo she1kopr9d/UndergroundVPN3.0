@@ -5,6 +5,7 @@ import typing
 
 import config as env_config
 import docker
+import schemas
 
 # START vpn conteiner space
 
@@ -68,28 +69,26 @@ def add_user_to_config(
 
 
 def remove_user_from_config(
-    client_data: dict,
+    client_data: schemas.ConfigEditInfo,
     config: dict[str, typing.Any],
 ) -> None:
     inbound = find_inbound(config)
     settings = inbound.get("settings", {})
     clients = settings.get("clients", [])
 
-    updated_clients = [
-        client
-        for client in clients
-        if (
-            not (
-                client.get("email") == client_data.get("email")
-                and client.get("id") == client_data.get("uuid")
-            )
-        )
-    ]
+    updated_clients = []
+    for client in clients:
+        print(client.get("id"), client_data.uuid)
+        print(str(client.get("id")) == str(client_data.uuid))
+        if not (str(client.get("id")) == str(client_data.uuid)):
+            updated_clients.append(client)
 
     if len(updated_clients) == len(clients):
+        print("test")
         return "not exists"
 
     settings["clients"] = updated_clients
+    save_config(settings)
     return "deleted"
 
 
