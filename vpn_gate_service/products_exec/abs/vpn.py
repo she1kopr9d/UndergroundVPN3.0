@@ -1,4 +1,5 @@
 import random
+import re
 
 import database.io.base
 import database.models
@@ -11,6 +12,10 @@ import schemas.servers
 import tasks.config
 
 
+def clean_string(s: str) -> str:
+    return re.sub(r"[^a-zA-Z0-9-]", "", s)
+
+
 class VPNProduct(products_exec.abs.base.Product):
     async def create(self, user_id, subscription_id):
         user: database.models.TelegramUser = (
@@ -20,7 +25,9 @@ class VPNProduct(products_exec.abs.base.Product):
                 object_class=database.models.TelegramUser,
             )
         )
-        config_name = f"{user.username}-{random.randint(0, 0xFFFF):04X}"
+        config_name = (
+            f"{clean_string(user.username)}-{random.randint(0, 0xFFFF):04X}"
+        )
         server = logic.server_session.get_random_server()
         await self.create_config(
             data=schemas.config.CreateConfig(

@@ -53,6 +53,8 @@ async def product_buy_handle(
             broker=router.broker,
         )
     )
+    if payment.status.value == database.models.PaymentStatus.failed.value:
+        return
     user: database.models.TelegramUser = (
         await database.io.base.get_object_by_field(
             field=database.models.TelegramUser.telegram_id,

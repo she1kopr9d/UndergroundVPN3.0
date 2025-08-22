@@ -10,10 +10,15 @@ import httpx
 import schemas.config
 import schemas.servers
 import schemas.telegram
+import re
+
+
+def clean_string(s: str) -> str:
+    return re.sub(r"[^a-zA-Z0-9-]", "", s)
 
 
 def get_user_email(user_name: str) -> str:
-    return f"{user_name}@user.id"
+    return f"{clean_string(user_name)}@user.id"
 
 
 async def create_config_url(
@@ -106,12 +111,11 @@ async def delete_config(
     server_data: schemas.servers.ServerPublicInfo,
     config_obj: database.models.Config,
 ):
-    user_uuid = uuid.uuid4()
     user_email = get_user_email(config_obj.name)
     secret_key = database.io.server.get_secret_key_by_name(server_data.name)
     payload = {
         "email": user_email,
-        "uuid": str(user_uuid),
+        "uuid": config_obj.uuid,
         "secret_key": secret_key,
     }
     async with httpx.AsyncClient() as client:
@@ -126,7 +130,7 @@ async def delete_config(
         raise RuntimeError("cell server drop error")
     server_id = database.io.server.get_server_id_by_name(server_data.name)
     await database.io.server.delete_user_from_config(
-        str(user_uuid),
+        config_obj.uuid,
         server_id,
         lambda temp_config_data, temp_uuid: (
             [
