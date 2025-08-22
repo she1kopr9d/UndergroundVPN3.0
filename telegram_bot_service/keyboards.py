@@ -292,6 +292,52 @@ def build_cancel_accept_keyboard(
     return aiogram.types.InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
 
 
+def build_resub_config_info_keyboard(
+    data: schemas.config.ConfigInfoANSW,
+) -> aiogram.types.InlineKeyboardMarkup:
+    inline_keyboard = []
+    for text, action in [
+        ("Возобновить подписку", "resub_1"),
+        ("Назад", "back"),
+    ]:
+        inline_keyboard.append(
+            [
+                build_config_button(
+                    text,
+                    action,
+                    data.config_id,
+                    data.user_id,
+                    data.now_page,
+                    data.message_id,
+                )
+            ]
+        )
+    return aiogram.types.InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
+
+
+def build_resub_accept_keyboard(
+    data: callback.ConfigCallback,
+) -> aiogram.types.InlineKeyboardMarkup:
+    inline_keyboard = []
+    for text, action in [
+        ("Не возобновлять", "open"),
+        ("Возобновить", "resub_2"),
+    ]:
+        inline_keyboard.append(
+            [
+                build_config_button(
+                    text,
+                    action,
+                    data.config_id,
+                    data.user_id,
+                    data.page,
+                    data.message_id,
+                )
+            ]
+        )
+    return aiogram.types.InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
+
+
 def build_deposit_button(
     user_id: int,
     name: str,
@@ -483,6 +529,7 @@ def build_main_menu_keyboard(
             ("Конфиги", "conf"),
             ("К покупкам", "buy"),
             ("Cсылки на приложения", "app"),
+            ("Гайд", "guide"),
         ]
     ]
     return aiogram.types.InlineKeyboardMarkup(inline_keyboard=inline_keyboard)

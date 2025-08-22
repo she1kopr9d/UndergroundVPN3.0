@@ -26,3 +26,4 @@ class ConfigInfoANSW(pydantic.BaseModel):
     server_name: str
     now_page: int
     end_date: datetime.datetime | None
+    status: str | None

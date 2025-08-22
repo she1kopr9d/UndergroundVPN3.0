@@ -112,3 +112,21 @@ async def app_menu(
         text=content.user.APP_COMMAND(),
         parse_mode="HTML",
     )
+
+
+@router.callback_query(
+    callback.MainMenuCallBack.filter(
+        aiogram.F.action == "guide",
+    )
+)
+async def guide_menu(
+    query: aiogram.types.CallbackQuery,
+    callback_data: callback.MainMenuCallBack,
+    bot: aiogram.Bot,
+    state: aiogram.fsm.context.FSMContext,
+):
+    await state.clear()
+    await query.message.answer(
+        text=content.user.GUIDE_COMMAND(),
+        parse_mode="HTML",
+    )

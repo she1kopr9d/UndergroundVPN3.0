@@ -184,8 +184,10 @@ async def conf_info_handler(
         )
     )
     end_date = None
+    status = None
     if sub is not None:
         end_date = sub.end_date
+        status = sub.status.value
     await router.broker.publish(
         {
             "user_id": data.user_id,
@@ -197,6 +199,7 @@ async def conf_info_handler(
             "server_name": server_obj.name,
             "now_page": data.now_page,
             "end_date": end_date,
+            "status": status,
         },
         queue="conf_info_command_answer",
     )
@@ -239,26 +242,6 @@ async def conf_delete_handler(
 async def conf_cancel_handler(
     data: schemas.config.ConfigGetInfo,
 ):
-    # config_obj: database.models.Config = (
-    #     await database.io.base.get_object_by_id(
-    #         id=data.config_id,
-    #         object_class=database.models.Config,
-    #     )
-    # )
-    # server_obj: database.models.Server = (
-    #     await database.io.base.get_object_by_id(
-    #         id=config_obj.server_id,
-    #         object_class=database.models.Server,
-    #     )
-    # )
-    # server_data: schemas.servers.ServerPublicInfo = (
-    #     logic.server_session.get_active_server(server_obj.name)
-    # )
-    # await logic.server_query.delete_config(
-    #     data,
-    #     server_data,
-    #     config_obj,
-    # )
     sub: database.models.Subscription = (
         await database.io.base.get_object_by_field(
             field=database.models.Subscription.external_id,
@@ -289,6 +272,50 @@ async def conf_cancel_handler(
                     {
                         "user_id": data.user_id,
                         "text": "Вы уже и так отменили подписку!",
+                        "photo": None,
+                    },
+                    queue="send_telegram_message",
+                )
+    await router.broker.publish(
+        {
+            "user_id": data.user_id,
+            "message_id": data.message_id,
+        },
+        queue="delete_config_command_answer",
+    )
+
+
+@router.subscriber("resub_config_command")
+async def conf_resub_handler(
+    data: schemas.config.ConfigGetInfo,
+):
+    sub: database.models.Subscription = (
+        await database.io.base.get_object_by_field(
+            field=database.models.Subscription.external_id,
+            value=data.config_id,
+            object_class=database.models.Subscription,
+        )
+    )
+    if sub is not None:
+        match sub.status.value:
+            case database.models.SubscriptionStatus.canceled.value:
+                await database.io.sub.set_subscription_inactive(
+                    subscription_id=sub.id,
+                    status=database.models.SubscriptionStatus.active,
+                )
+                await router.broker.publish(
+                    {
+                        "user_id": data.user_id,
+                        "text": "Подписка возобновлена!",
+                        "photo": None,
+                    },
+                    queue="send_telegram_message",
+                )
+            case database.models.SubscriptionStatus.active.value:
+                await router.broker.publish(
+                    {
+                        "user_id": data.user_id,
+                        "text": "Ваша подписка и так активна!",
                         "photo": None,
                     },
                     queue="send_telegram_message",

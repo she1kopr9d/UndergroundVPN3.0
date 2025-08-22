@@ -11,6 +11,8 @@ import faststream.rabbit.fastapi
 import logic.payment_system
 import schemas.deposit
 import schemas.telegram
+import logic.crypto_dep
+
 
 router = faststream.rabbit.fastapi.RabbitRouter(config.rabbitmq.rabbitmq_url)
 
@@ -85,6 +87,21 @@ async def accept_deposit_handle(
 async def cansel_deposit_handle(
     data: schemas.deposit.DepositeMoveData,
 ):
+    payment: database.models.Payment = await database.io.base.get_object_by_id(
+        id=data.payment_id,
+        object_class=database.models.Payment,
+    )
+    if (
+        payment.payment_method.value
+        == database.models.PaymentMethod.crypto.value
+    ):
+        if await logic.crypto_dep.check_paid_payment_status(payment):
+            await logic.crypto_dep.valid_accept_payment(
+                payment,
+                router.broker,
+                data.user_id,
+                data.message_id,
+            )
     await database.io.payments.update_payment_status(
         data.payment_id,
         database.models.PaymentStatus.failed,

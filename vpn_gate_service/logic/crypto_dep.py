@@ -53,6 +53,29 @@ async def check_paid_payment_status(
     return invoice.status == "paid"
 
 
+async def valid_accept_payment(
+    payment: database.models.Payment,
+    broker: faststream.rabbit.RabbitBroker,
+    user_id: int,
+    message_id: int,
+):
+    await database.io.finance_account.add_amount_on_balance(
+        finance_account_id=payment.finance_account_id,
+        amount=payment.amount,
+    )
+    await database.io.payments.update_payment_status(
+        payment_id=payment.id,
+        new_status=database.models.PaymentStatus.completed,
+    )
+    await broker.publish(
+        {
+            "user_id": user_id,
+            "message_id": message_id,
+        },
+        queue="accept_deposit_moder_to_client",
+    )
+
+
 async def accept_payment(
     payment: database.models.Payment,
     broker: faststream.rabbit.RabbitBroker,
@@ -60,20 +83,11 @@ async def accept_payment(
     message_id: int,
 ):
     if await check_paid_payment_status(payment):
-        await database.io.finance_account.add_amount_on_balance(
-            finance_account_id=payment.finance_account_id,
-            amount=payment.amount,
-        )
-        await database.io.payments.update_payment_status(
-            payment_id=payment.id,
-            new_status=database.models.PaymentStatus.completed,
-        )
-        await broker.publish(
-            {
-                "user_id": user_id,
-                "message_id": message_id,
-            },
-            queue="accept_deposit_moder_to_client",
+        await valid_accept_payment(
+            payment,
+            broker,
+            user_id,
+            message_id,
         )
         return True
     else:

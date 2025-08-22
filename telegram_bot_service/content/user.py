@@ -90,6 +90,13 @@ def APP_COMMAND() -> str:
 """
 
 
+def GUIDE_COMMAND() -> str:
+    return """
+<a href="https://telegra.ph/Gajd-po-ispolzovaniyu-V2RayTun-08-22-2">Ссылка на гайд</a>
+
+"""
+
+
 def PROFILE_COMMAND(
     profile_data: schemas.user.ProfileData,
     bot_username: str,

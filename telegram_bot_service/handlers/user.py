@@ -226,6 +226,39 @@ async def conf_user_delete_2_query(
     )
 
 
+@router.callback_query(
+    callback.ConfigCallback.filter(aiogram.F.action == "resub_1")
+)
+async def conf_user_resub_1_query(
+    query: aiogram.types.CallbackQuery,
+    callback_data: callback.ConfigCallback,
+):
+    await query.bot.edit_message_text(
+        chat_id=callback_data.user_id,
+        message_id=callback_data.message_id,
+        text=content.config.CONFIG_RESUB_QUESTION(),
+        reply_markup=keyboards.build_resub_accept_keyboard(callback_data),
+    )
+
+
+@router.callback_query(
+    callback.ConfigCallback.filter(aiogram.F.action == "resub_2")
+)
+async def conf_user_resub_2_query(
+    query: aiogram.types.CallbackQuery,
+    callback_data: callback.ConfigCallback,
+):
+    await rabbit.broker.publish(
+        {
+            "user_id": callback_data.user_id,
+            "config_id": callback_data.config_id,
+            "message_id": callback_data.message_id,
+            "now_page": callback_data.page,
+        },
+        queue="resub_config_command",
+    )
+
+
 @router.message(aiogram.filters.Command("menu"))
 async def menu_handler(message: aiogram.types.Message):
     await logic.menu.main_menu(
