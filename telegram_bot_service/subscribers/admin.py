@@ -26,7 +26,7 @@ async def handle_auth_server(
 
 @rabbit.broker.subscriber("create_server_answer")
 async def handle_create_server(
-    data: schemas.user.StatusDataANSW,
+    data: schemas.user.ServerCreate,
 ):
     bot = await deps.get_bot()
     if data.status != "ok":
@@ -37,5 +37,10 @@ async def handle_create_server(
         return
     await bot.send_message(
         chat_id=data.user_id,
-        text="Сервер успешно создан",
+        text=(
+            "<b>Сервер успешно создан</b>\n\n"
+            f"public_key - <code>{data.public_key}</code>\n"
+            f"private_key - <code>{data.private_key}</code>"
+        ),
+        parse_mode="HTML",
     )

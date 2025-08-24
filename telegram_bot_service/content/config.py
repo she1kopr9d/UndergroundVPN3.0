@@ -30,14 +30,14 @@ def CONFIG_INFO(
     return f"""
 Информация конфига:
 
-*Сервер*: {data.server_name}
-*Название конфига*: {data.config_name}
+<b>Сервер</b>: {data.server_name}
+<b>Название конфига</b>: {data.config_name}
 
-*Дата окончания*: {format_date(data.end_date)}
+<b>Дата окончания</b>: {format_date(data.end_date)}
 
 
-*Ссылка на конфиг*
-`{data.config_url}`
+<b>Ссылка на конфиг</b>
+<code>{data.config_url}</code>
 """
 
 

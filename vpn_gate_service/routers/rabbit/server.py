@@ -45,11 +45,19 @@ async def handle_create_server(data: schemas.telegram.CreateServerData):
         ),
     )
 
-    await logic.config_query.create_server_config(server)
+    (
+        server_config,
+        public_key,
+        private_key
+    ) = (
+        await logic.config_query.create_server_config(server)
+    )
 
     await router.broker.publish(
         {
             "user_id": data.user_id,
+            "private_key": str(private_key),
+            "public_key": str(public_key),
             "status": "ok",
         },
         queue="create_server_answer",

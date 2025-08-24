@@ -54,7 +54,7 @@ def get_template_config(private) -> str:
 
 async def create_server_config(
     server: database.models.Server,
-) -> database.models.ServerConfig:
+) -> tuple:
     public, private = logic.keygen.gen_pair()
     config_data = get_template_config(private)
     server_config = database.io.server.create_server_config(
@@ -63,4 +63,4 @@ async def create_server_config(
         private,
         config_data,
     )
-    return server_config
+    return (server_config, public, private)

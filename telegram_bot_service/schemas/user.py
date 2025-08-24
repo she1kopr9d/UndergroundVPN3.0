@@ -26,6 +26,12 @@ class StatusDataANSW(UserIdANSW):
     status: str
 
 
+class ServerCreate(UserIdANSW):
+    status: str
+    public_key: str
+    private_key: str
+
+
 class ReferralData(pydantic.BaseModel):
     referrer_user_id: int
     referral_username: str | None
