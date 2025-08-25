@@ -25,6 +25,7 @@ async def create_config_url(
     user_uuid: str,
     user_email: str,
     server_data: schemas.servers.ServerPublicInfo,
+    server_public_key: str,
 ) -> str:
     vless_link = (
         "vless://"
@@ -34,7 +35,7 @@ async def create_config_url(
         f"&security={config.xray.SECURITY}"
         f"&sni={config.xray.HOST}"
         f"&fp={config.xray.FINGERPRINT}"
-        f"&pbk={config.xray.PUBLICKEY}"
+        f"&pbk={server_public_key}"
         f"&sid={config.xray.SHORTID}"
         f"&type={config.xray.NET_TYPE}#{user_email}"
     )
@@ -68,7 +69,19 @@ async def create_config(
     if data["status"] not in valid_status:
         raise RuntimeError("cell server drop error")
     server_id = database.io.server.get_server_id_by_name(server_data.name)
-    config_url = await create_config_url(user_uuid, user_email, server_data)
+    server_conf_obj: database.models.ServerConfig = (
+        await database.io.base.get_object_by_field(
+            field=database.models.ServerConfig.server_id,
+            value=server_id,
+            object_class=database.models.ServerConfig,
+        )
+    )
+    config_url = await create_config_url(
+        user_uuid,
+        user_email,
+        server_data,
+        server_conf_obj.public_key
+    )
     config_obj: database.models.Config = (
         await database.io.config.create_config(
             name=create_data.config_name,

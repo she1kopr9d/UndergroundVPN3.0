@@ -1,20 +1,10 @@
 NETWORK_NAME=undergroundvpn
 
-up-main:
+up:
 	docker-compose -f docker-compose.yml up -d --build
 
-up-cell:
-	docker-compose -f vpn_cell_service_2/docker-compose.yml up -d --build
-
-up: up-main up-cell
-
-down-main:
+down:
 	docker-compose -f docker-compose.yml down
-
-down-cell:
-	docker-compose -f vpn_cell_service_2/docker-compose.yml down
-
-down: down-cell down-main
 
 migrations:
 	docker-compose -f docker-compose.yml run vpn-gate alembic revision --autogenerate
