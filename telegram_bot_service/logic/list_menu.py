@@ -7,7 +7,7 @@ async def publish_list_menu(
     user_id: int,
     message_id: int,
     page: int = 0,
-    pagination: int = 3,
+    pagination: int = 5,
 ):
     await rabbit.broker.publish(
         {
