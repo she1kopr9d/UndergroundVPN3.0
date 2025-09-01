@@ -3,8 +3,6 @@ services:
     image: postgres:15
     ports:
       - "5433:5432"
-    networks:
-      - undergroundvpn
     volumes:
       - postgres_data:/var/lib/postgresql/data
     env_file:
@@ -31,8 +29,6 @@ services:
     volumes:
       - ./vpn_gate_service:/app
       - ./vpn_gate_service/uploads:/app/uploads
-    networks:
-      - undergroundvpn
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -41,8 +37,6 @@ services:
       - "15672:15672"
     env_file:
       - .env
-    networks:
-      - undergroundvpn
     environment:
       RABBITMQ_LOGS: "-"
       RABBITMQ_LOG_LEVEL: "warning"
@@ -64,8 +58,6 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
-    networks:
-      - undergroundvpn
 
   celery-worker:
     build: ./vpn_gate_service
@@ -77,8 +69,6 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
-    networks:
-      - undergroundvpn
     volumes:
       - ./vpn_gate_service:/app
 
@@ -92,14 +82,8 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
-    networks:
-      - undergroundvpn
     volumes:
       - ./vpn_gate_service:/app
 
 volumes:
   postgres_data:
-
-networks:
-  undergroundvpn:
-    external: true

@@ -97,16 +97,27 @@ async def update_sub(
             object_class=database.models.TelegramUser,
         )
     )
+    product: database.models.Product = await database.io.base.get_object_by_id(
+        id=subscription.product_id,
+        object_class=database.models.Product,
+    )
+    exec_obj: products_exec.abs.base.Product = (
+        (await products_exec.get_exec_class_from_product_id(
+            product_id=product.id,
+        ))(rabbit.broker)
+    )
+    payment_next = await exec_obj.update(user.telegram_id, subscription.id)
+    if not payment_next:
+        await database.io.sub.set_subscription_inactive(
+            subscription_id=subscription_id,
+        )
+        return
     payment: database.models.Payment = (
         await logic.payment_system.withdrawal_payment(
             user_id=user.telegram_id,
             product_id=subscription.product_id,
             broker=rabbit.broker,
         )
-    )
-    product: database.models.Product = await database.io.base.get_object_by_id(
-        id=subscription.product_id,
-        object_class=database.models.Product,
     )
     match payment.status.value:
         case database.models.PaymentStatus.failed.value:

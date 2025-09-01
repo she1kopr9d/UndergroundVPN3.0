@@ -17,7 +17,24 @@ def clean_string(s: str) -> str:
 
 
 class VPNProduct(products_exec.abs.base.Product):
-    async def create(self, user_id, subscription_id):
+    async def check(self, user_id: int) -> bool:
+        if not logic.server_session.active_servers:
+            await self.broker.publish(
+                {
+                    "user_id": user_id,
+                    "text": (
+                        "🚫 Сервера для выдачи переполнены. "
+                        "Обратитесь в поддержку или "
+                        "попробуйте в другой раз."
+                    ),
+                    "photo": None,
+                },
+                queue="send_telegram_message",
+            )
+            return False
+        return await super().check(user_id)
+
+    async def create(self, user_id, subscription_id) -> None:
         user: database.models.TelegramUser = (
             await database.io.base.get_object_by_field(
                 field=database.models.TelegramUser.telegram_id,
@@ -53,7 +70,7 @@ class VPNProduct(products_exec.abs.base.Product):
             }
         )
 
-    async def remove(self, user_id: int, subscription_id: int):
+    async def remove(self, user_id: int, subscription_id: int) -> None:
         subscription: database.models.Subscription = (
             await database.io.base.get_object_by_id(
                 id=subscription_id,
@@ -67,3 +84,6 @@ class VPNProduct(products_exec.abs.base.Product):
             ).dict(),
             queue="delete_config",
         )
+
+    async def update(self, user_id: int, subscription_id: int) -> bool:
+        return await super().update(user_id, subscription_id)

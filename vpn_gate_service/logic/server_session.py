@@ -11,6 +11,10 @@ SERVER_TIMEOUT = 60
 active_servers: Dict[str, Tuple[schemas.servers.ServerPublicInfo, float]] = {}
 
 
+def is_null() -> bool:
+    return len(active_servers) == 0
+
+
 def is_authorized(name: str) -> bool:
     return name in active_servers
 

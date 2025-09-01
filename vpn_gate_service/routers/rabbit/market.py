@@ -45,6 +45,20 @@ async def product_info_handle(
 async def product_buy_handle(
     data: schemas.product.ProductGet,
 ):
+    exec_product: database.models.ExecuteProduct = (
+        await database.io.base.get_object_by_field(
+            field=database.models.ExecuteProduct.product_id,
+            value=data.product_id,
+            object_class=database.models.ExecuteProduct,
+        )
+    )
+    exec_obj: products_exec.abs.base.Product = (products_exec.exec_list[
+        exec_product.executor_name
+    ])(broker=router.broker)
+    is_ready: bool = await exec_obj.check(data.user_id)
+    print(f"is_ready: {is_ready}")
+    if not is_ready:
+        return
     payment: database.models.Payment = (
         await logic.payment_system.withdrawal_payment(
             user_id=data.user_id,
@@ -67,17 +81,6 @@ async def product_buy_handle(
         product_id=data.product_id,
         payment=payment,
     )
-    exec_product: database.models.ExecuteProduct = (
-        await database.io.base.get_object_by_field(
-            field=database.models.ExecuteProduct.product_id,
-            value=data.product_id,
-            object_class=database.models.ExecuteProduct,
-        )
-    )
-
-    exec_obj: products_exec.abs.base.Product = products_exec.exec_list[
-        exec_product.executor_name
-    ]()
     await exec_obj.create(
         user_id=data.user_id,
         subscription_id=subscription.id,

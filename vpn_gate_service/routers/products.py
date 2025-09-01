@@ -45,10 +45,20 @@ async def market_list_a_router(user_id):
             filters=filters,
         )
     )
+    objects_f = []
+    if not user.is_trial:
+        print("Filtering trial products")
+        for obj in objects:
+            print(obj.price, obj.price > 0)
+            if obj.price > 0:
+                objects_f.append(obj)
+    else:
+        objects_f = objects
+
     return {
         "status": "ok",
         "products": [
             schemas.product.ProductShortSchema.model_validate(obj)
-            for obj in objects
+            for obj in objects_f
         ],
     }

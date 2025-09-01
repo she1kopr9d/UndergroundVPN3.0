@@ -138,6 +138,7 @@ async def market_command_handler(data: schemas.telegram.MarketPage):
         await database.io.products.get_products_with_pagination_f(
             data,
             is_friend=user.is_friend,
+            is_trial=user.is_trial,
         )
     )
     await router.broker.publish(

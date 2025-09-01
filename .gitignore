@@ -4,3 +4,4 @@ data/
 venv/
 vpn_gate_service/uploads/receipts/*
 *.dump
+database_backup/

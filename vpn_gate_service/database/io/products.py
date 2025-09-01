@@ -40,6 +40,7 @@ async def get_products_with_pagination(
 async def get_products_with_pagination_f(
     data: schemas.telegram.MarketPage,
     is_friend: bool,
+    is_trial: bool,
 ) -> typing.Tuple[typing.List[schemas.product.ProductInfo], int]:
     async with database.core.async_session_factory() as session:
         stmt_count = sqlalchemy.select(sqlalchemy.func.count()).select_from(
@@ -72,4 +73,5 @@ async def get_products_with_pagination_f(
                 product_name=prod.name,
             )
             for prod in products
+            if is_trial or prod.price > 0
         ], max_page
