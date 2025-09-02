@@ -57,6 +57,27 @@ async def handle_start(data: schemas.telegram.StartData):
     )
 
 
+@router.subscriber("special_start_command")
+async def handle_special_start(data: schemas.telegram.SpecialStartData):
+    match data.command:
+        case "trial":
+            product: database.models.Product = (
+                await database.io.base.get_object_by_field(
+                    field=database.models.Product.price,
+                    value=0,
+                    object_class=database.models.Product,
+                )
+            )
+            await router.broker.publish(
+                {
+                    "user_id": data.user_id,
+                    "message_id": -1,
+                    "product_id": product.id,
+                },
+                queue="product_buy",
+            )
+
+
 @router.subscriber("profile_command")
 async def profile_command_hadler(
     data: schemas.telegram.UserData,

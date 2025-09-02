@@ -22,14 +22,23 @@ async def handle_start_command_deep_link(
             "К сожалению я не могу работать с пользователями без username"
         )
         return
-    await rabbit.broker.publish(
-        {
-            "user_id": message.from_user.id,
-            "username": message.from_user.username,
-            "referrer_user_id": int(command.args),
-        },
-        queue="start_command",
-    )
+    if not command.args.isdigit():
+        await rabbit.broker.publish(
+            {
+                "user_id": message.from_user.id,
+                "command": command.args,
+            },
+            queue="special_start_command",
+        )
+    else:
+        await rabbit.broker.publish(
+            {
+                "user_id": message.from_user.id,
+                "username": message.from_user.username,
+                "referrer_user_id": int(command.args),
+            },
+            queue="start_command",
+        )
 
 
 @router.message(aiogram.filters.CommandStart(deep_link=False))
@@ -56,6 +65,17 @@ async def handle_help_command(message: aiogram.types.Message):
     await message.answer(
         text=content.user.HELP_COMMAND(),
         parse_mode="HTML",
+    )
+
+
+@router.message(aiogram.filters.Command("trial"))
+async def handle_trial_command(message: aiogram.types.Message):
+    await rabbit.broker.publish(
+        {
+            "user_id": message.from_user.id,
+            "command": "trial",
+        },
+        queue="special_start_command",
     )
 
 

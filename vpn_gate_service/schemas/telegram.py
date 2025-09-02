@@ -9,6 +9,11 @@ class StartData(pydantic.BaseModel):
     referrer_user_id: int | None
 
 
+class SpecialStartData(pydantic.BaseModel):
+    user_id: int
+    command: str
+
+
 class ProfileData(pydantic.BaseModel):
     user_id: int
     username: str
