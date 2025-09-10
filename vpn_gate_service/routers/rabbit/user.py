@@ -33,7 +33,10 @@ async def handle_start(data: schemas.telegram.StartData):
                 data,
                 referrer.id,
             )
-            await database.io.finance_account.create_finance_account(user.id)
+            await database.io.finance_account.create_finance_account(
+                user.id,
+                balance=100.0,
+            )
             await router.broker.publish(
                 {
                     "referrer_user_id": referrer.user_id,

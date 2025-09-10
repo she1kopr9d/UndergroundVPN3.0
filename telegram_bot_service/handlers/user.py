@@ -23,13 +23,14 @@ async def handle_start_command_deep_link(
         )
         return
     if not command.args.isdigit():
-        await rabbit.broker.publish(
-            {
-                "user_id": message.from_user.id,
-                "command": command.args,
-            },
-            queue="special_start_command",
-        )
+        pass
+        # await rabbit.broker.publish(
+        #     {
+        #         "user_id": message.from_user.id,
+        #         "command": command.args,
+        #     },
+        #     queue="special_start_command",
+        # )
     else:
         await rabbit.broker.publish(
             {

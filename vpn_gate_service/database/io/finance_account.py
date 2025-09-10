@@ -6,10 +6,12 @@ import sqlalchemy.orm
 
 async def create_finance_account(
     user_id: int,
+    balance: float = 0.0,
 ) -> database.models.FinanceAccount:
     async with database.core.async_session_factory() as session:
         finance_account = database.models.FinanceAccount(
             user_id=user_id,
+            balance=balance,
         )
         session.add(finance_account)
         await session.commit()

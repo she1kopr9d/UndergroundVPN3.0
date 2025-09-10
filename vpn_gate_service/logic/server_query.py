@@ -18,7 +18,7 @@ def clean_string(s: str) -> str:
 
 
 def get_user_email(user_name: str) -> str:
-    return f"{clean_string(user_name)}@user.id"
+    return f"{clean_string(user_name)}"
 
 
 async def create_config_url(
