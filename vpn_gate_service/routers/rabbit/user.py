@@ -193,6 +193,13 @@ async def conf_info_handler(
             object_class=database.models.Server,
         )
     )
+    server_config_obj: database.models.ServerConfig = (
+        await database.io.base.get_object_by_field(
+            field=database.models.ServerConfig.server_id,
+            value=server_obj.id,
+            object_class=database.models.ServerConfig,
+        )
+    )
     server_data: schemas.servers.ServerPublicInfo = (
         logic.server_session.get_active_server(server_obj.name)
     )
@@ -200,6 +207,7 @@ async def conf_info_handler(
         user_uuid=config_obj.uuid,
         user_email=logic.server_query.get_user_email(config_obj.name),
         server_data=server_data,
+        server_public_key=server_config_obj.public_key,
     )
     sub: database.models.Subscription = (
         await database.io.base.get_object_by_field(
