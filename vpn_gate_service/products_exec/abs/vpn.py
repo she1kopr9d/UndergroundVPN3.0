@@ -5,6 +5,7 @@ import database.io.base
 import database.models
 import logic.server_query
 import logic.server_session
+import database.io.server
 import products_exec.abs.base
 import rabbit
 import schemas.config
@@ -45,7 +46,10 @@ class VPNProduct(products_exec.abs.base.Product):
         config_name = (
             f"{clean_string(user.username)}-{random.randint(0, 0xFFFF):04X}"
         )
-        server = logic.server_session.get_random_server()
+        servers = logic.server_session.get_active_servers()
+        servers_name = [server.name for server in servers]
+        server_name = await database.io.server.get_low_server_id(servers_name)
+        server = logic.server_session.get_active_server(server_name)
         await self.create_config(
             data=schemas.config.CreateConfig(
                 user_id=user_id,

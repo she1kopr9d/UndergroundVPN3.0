@@ -7,6 +7,22 @@ import sqlalchemy
 import sqlalchemy.orm
 
 
+async def get_low_server_id(servers_names: list[str]) -> str | None:
+    async with database.core.async_session_factory() as session:
+        stmt = (
+            sqlalchemy.select(database.models.Server.name)
+            .outerjoin(database.models.Config)
+            .where(database.models.Server.name.in_(servers_names))
+            .group_by(database.models.Server.id)
+            .order_by(sqlalchemy.func.count(database.models.Config.id))
+            .limit(1)
+        )
+
+        result = await session.execute(stmt)
+        low_server_name: str | None = result.scalar_one_or_none()
+        return low_server_name
+
+
 def server_exists(server: schemas.servers.ServerAuth) -> bool:
     with database.core.session_factory() as session:
         stmt = sqlalchemy.select(database.models.Server).where(
