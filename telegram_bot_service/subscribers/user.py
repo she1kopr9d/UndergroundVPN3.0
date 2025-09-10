@@ -131,7 +131,7 @@ async def conf_info_command_handler(
         message_id=data.message_id,
         text=content.config.CONFIG_INFO(data),
         reply_markup=kb(data),
-        parse_mode="Markdown",
+        parse_mode="HTML",
     )
 
 
